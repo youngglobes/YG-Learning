@@ -35,17 +35,19 @@ Appendix A lists the deprecated APIs by name with their replacements. When an in
 
 ## Module map
 
+Module *N* lives in `langchain-00N-*.md`. Written modules are linked.
+
 | # | Module | You will build | New concepts |
 |---|--------|----------------|--------------|
-| 0 | Setup & Mental Model | A running agent, first tokens spent | What v1 actually is; cost guardrails |
-| 1 | Models & Messages | Token/cost calculator CLI | `init_chat_model`, messages, content blocks |
-| 2 | Tools | Three-tool agent | `@tool`, schemas as contracts, tool errors |
-| 3 | Agents & Tracing | Traced agent in LangSmith | `create_agent`, the agent loop, observability |
-| 4 | Structured Output | Resume/invoice extractor | Pydantic schemas, validation, retry |
+| 0 | [Setup & Mental Model](./langchain-000-setup-and-mental-model.md) | A running agent, first tokens spent | What v1 actually is; cost guardrails |
+| 1 | [Models & Messages](./langchain-001-models-and-messages.md) | Token/cost calculator CLI | `init_chat_model`, messages, content blocks |
+| 2 | [Tools](./langchain-002-tools.md) | Three-tool agent | `@tool`, `parse_docstring`, schemas as contracts |
+| 3 | [Agents & Tracing](./langchain-003-agents-and-tracing.md) | Traced agent in LangSmith | `create_agent`, the loop, call limits, observability |
+| 4 | [Structured Output](./langchain-004-structured-output.md) | Enquiry/invoice extractor | Pydantic schemas, validators, informed retry |
 | 5 | Memory & State | Multi-turn assistant with persistence | Checkpointers, threads, summarization |
 | 6 | Retrieval Foundations | Indexed document corpus | Loaders, splitters, embeddings, vector stores |
-| 7 | Agentic RAG | Doc Q&A with citations | Retrieval as a tool; **prompt injection defence** |
-| 8 | Middleware | PII redaction + token budget | The v1 extension point |
+| 7 | [Agentic RAG](./langchain-007-agentic-rag.md) | Doc Q&A with citations | Retrieval as a tool; **prompt injection defence** |
+| 8 | Middleware | Custom middleware + built-in composition | The v1 extension point |
 | 9 | Evaluation | Regression suite for Module 7 | Datasets, evaluators, LLM-as-judge |
 | 10 | LangGraph | Approval-gated workflow | `StateGraph`, routing, human-in-the-loop |
 | 11 | Multi-Agent | Support triage system | Handoffs, supervisor pattern, cost discipline |
@@ -277,11 +279,13 @@ prompt = (
 
 **Concepts**
 - Where middleware sits in the agent loop
-- Built-in middleware: summarization, guardrails
-- Writing custom middleware
+- **Reading the built-in list before writing your own.** `langchain.agents.middleware` already ships ~20 of them, including `PIIMiddleware`, `SummarizationMiddleware`, `ModelCallLimitMiddleware`, `ToolCallLimitMiddleware`, `ToolRetryMiddleware`, `ModelFallbackMiddleware`, `HumanInTheLoopMiddleware`, and `ContextEditingMiddleware`
 - Composition and ordering
+- Writing custom middleware for the cases genuinely not covered
 
-**Deliverable.** Two custom middleware: one redacting PII before the model call, one enforcing a per-run token budget and failing cleanly when exceeded.
+**Deliverable.** Two parts. First, compose built-ins: `PIIMiddleware` for redaction plus `ModelCallLimitMiddleware` for budget — both already exist, and the lesson is checking before building. Second, write **one** genuinely custom middleware for something the library does not cover (for example, logging every tool call to your own audit table, or blocking requests outside business hours).
+
+An earlier draft of this syllabus set "write PII redaction middleware" as the assignment. Inspecting the installed package showed `PIIMiddleware(pii_type, strategy, detector, apply_to_input, apply_to_output, apply_to_tool_results)` already exists. Reimplementing it would have been a worse lesson than finding it — so finding it is now the lesson.
 
 ---
 
