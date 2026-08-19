@@ -287,4 +287,4 @@ Plus a short written answer to: **"which fields did the model invent when you ma
 
 ---
 
-*End of Phase 1. You can now call models, define tools, run and debug an agent loop, and return validated data. Next: Module 5 — Memory & State (not yet written), where the agent stops forgetting you between turns.*
+*End of Phase 1. You can now call models, define tools, run and debug an agent loop, and return validated data. Next: [Module 5 — Memory & State](./langchain-005-memory-and-state.md), where the agent stops forgetting you between turns.*

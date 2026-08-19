@@ -44,8 +44,8 @@ Module *N* lives in `langchain-00N-*.md`. Written modules are linked.
 | 2 | [Tools](./langchain-002-tools.md) | Three-tool agent | `@tool`, `parse_docstring`, schemas as contracts |
 | 3 | [Agents & Tracing](./langchain-003-agents-and-tracing.md) | Traced agent in LangSmith | `create_agent`, the loop, call limits, observability |
 | 4 | [Structured Output](./langchain-004-structured-output.md) | Enquiry/invoice extractor | Pydantic schemas, validators, informed retry |
-| 5 | Memory & State | Multi-turn assistant with persistence | Checkpointers, threads, summarization |
-| 6 | Retrieval Foundations | Indexed document corpus | Loaders, splitters, embeddings, vector stores |
+| 5 | [Memory & State](./langchain-005-memory-and-state.md) | Multi-turn assistant with persistence | Checkpointers, threads, summarization |
+| 6 | [Retrieval Foundations](./langchain-006-retrieval-foundations.md) | Indexed document corpus | Loaders, splitters, embeddings, vector stores |
 | 7 | [Agentic RAG](./langchain-007-agentic-rag.md) | Doc Q&A with citations | Retrieval as a tool; **prompt injection defence** |
 | 8 | Middleware | Custom middleware + built-in composition | The v1 extension point |
 | 9 | Evaluation | Regression suite for Module 7 | Datasets, evaluators, LLM-as-judge |
@@ -78,7 +78,7 @@ def get_weather(city: str) -> str:
     return f"It's always sunny in {city}!"
 
 agent = create_agent(
-    model="claude-opus-5",
+    model="anthropic:claude-opus-5",
     tools=[get_weather],
     system_prompt="You are a helpful assistant",
 )
@@ -105,7 +105,7 @@ Nine lines. Read them, then read them again after Module 3 — every one of them
 **Why this matters.** Everything downstream is a message list. Interns who skip this spend Module 7 confused about why their retrieved context "disappeared."
 
 **Concepts**
-- `init_chat_model` and provider strings (`"claude-opus-5"`, `"openai:gpt-5.5"`, `"ollama:..."`)
+- `init_chat_model` and provider strings (`"anthropic:claude-opus-5"`, `"openai:gpt-5.5"`, `"ollama:..."`)
 - Message types: system, user, assistant, tool
 - **Content blocks** — the v1 representation. `content_blocks`, not `content`, is what you read
 - Multimodal input (images, PDFs)
