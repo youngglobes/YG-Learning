@@ -6,7 +6,7 @@
 **Estimated duration:** 8–10 weeks part-time, ~6 weeks full-time
 **Before you start:** [Choosing your model](./model-setup.md) — Claude or Ollama, your choice
 **Working through it?** [8-week learning plan](./learning-plan.md) — what to read and build each week
-**Building something?** [Agent app template](../../templates/agent-app/README.md) — clone this for every project
+**Building something?** [Agent app template](https://github.com/youngglobes/YG-Learning/tree/main/templates/agent-app) — clone this for every project
 **Reviewing this material?** [Verification checklist](./VERIFICATION.md) — behavioural claims still needing confirmation against a live model
 
 ---

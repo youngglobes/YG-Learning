@@ -1,0 +1,59 @@
+site_name: YG Learning
+site_description: Internal learning resources for YoungGlobes engineers
+docs_dir: docs
+site_dir: site
+
+theme:
+  name: material
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.sections
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.action.edit
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle: {icon: material/brightness-7, name: Switch to dark mode}
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle: {icon: material/brightness-4, name: Switch to light mode}
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - tables
+  - toc: {permalink: true}
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed: {alternate_style: true}
+  - pymdownx.highlight: {anchor_linenums: true}
+  - pymdownx.inlinehilite
+
+nav:
+  - Home: index.md
+  - LangChain:
+      - Syllabus: langchain/index.md
+      - Choosing your model: langchain/model-setup.md
+      - 8-week plan: langchain/learning-plan.md
+      - "Phase 1 — Core":
+          - "0 · Setup & Mental Model": langchain/langchain-000-setup-and-mental-model.md
+          - "1 · Models & Messages": langchain/langchain-001-models-and-messages.md
+          - "2 · Tools": langchain/langchain-002-tools.md
+          - "3 · Agents & Tracing": langchain/langchain-003-agents-and-tracing.md
+          - "4 · Structured Output": langchain/langchain-004-structured-output.md
+      - "Phase 2 — Retrieval":
+          - "5 · Memory & State": langchain/langchain-005-memory-and-state.md
+          - "6 · Retrieval Foundations": langchain/langchain-006-retrieval-foundations.md
+          - "7 · Agentic RAG": langchain/langchain-007-agentic-rag.md
+      - "Phase 3 — Production":
+          - "8 · Middleware": langchain/langchain-008-middleware.md
+          - "9 · Evaluation": langchain/langchain-009-evaluation.md
+          - "10 · LangGraph": langchain/langchain-010-langgraph.md
+          - "11 · Multi-Agent": langchain/langchain-011-multi-agent.md
+          - "12 · Production": langchain/langchain-012-production.md
+      - Verification checklist: langchain/VERIFICATION.md
