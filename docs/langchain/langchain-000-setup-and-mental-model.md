@@ -4,6 +4,7 @@
 **Prerequisites:** AI Foundations (Python, LLM fundamentals)
 **Verified against:** `langchain` 1.3.14, Python 3.12
 **Estimated time:** 1–2 hours
+**Before this:** [Choosing your model](./model-setup.md)
 
 ---
 

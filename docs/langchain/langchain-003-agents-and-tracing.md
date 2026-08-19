@@ -174,6 +174,11 @@ Note the question needs **two** lookups. Watch how the model handles that — it
 
 ## 4. Run it
 
+> **On a small local model, some checks below will fail — and that is expected.**
+> The behavioural checks in this section depend on model capability. See the
+> capability tier table in [Choosing your model](./model-setup.md) before
+> concluding your code is wrong.
+
 ```bash
 export LANGSMITH_TRACING=true
 export LANGSMITH_API_KEY=lsv2_...

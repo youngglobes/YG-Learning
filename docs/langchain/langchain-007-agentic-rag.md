@@ -241,6 +241,11 @@ Only `ToolMessage`s have `.artifact`, and only when the tool declared `response_
 
 ## 4. Run it
 
+> **On a small local model, some checks below will fail — and that is expected.**
+> The behavioural checks in this section depend on model capability. See the
+> capability tier table in [Choosing your model](./model-setup.md) before
+> concluding your code is wrong.
+
 ```bash
 cd ~/dev/YG-Learning
 python3 -m venv .venv
