@@ -4,7 +4,8 @@
 **Prerequisite:** AI Foundations (Python, LLM fundamentals, prompt engineering, structured output)
 **Framework version:** LangChain v1.x (Python)
 **Estimated duration:** 8–10 weeks part-time, ~6 weeks full-time
-**Before you start:** [Choosing your model](./model-setup.md) — you pick your own; Ollama and hosted keys both work
+**Before you start:** [Choosing your model](./model-setup.md) — Claude or Ollama, your choice
+**Reviewing this material?** [Verification checklist](./VERIFICATION.md) — the behavioural claims that still need confirming against a live model
 
 ---
 
