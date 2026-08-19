@@ -47,11 +47,11 @@ Module *N* lives in `langchain-00N-*.md`. Written modules are linked.
 | 5 | [Memory & State](./langchain-005-memory-and-state.md) | Multi-turn assistant with persistence | Checkpointers, threads, summarization |
 | 6 | [Retrieval Foundations](./langchain-006-retrieval-foundations.md) | Indexed document corpus | Loaders, splitters, embeddings, vector stores |
 | 7 | [Agentic RAG](./langchain-007-agentic-rag.md) | Doc Q&A with citations | Retrieval as a tool; **prompt injection defence** |
-| 8 | Middleware | Custom middleware + built-in composition | The v1 extension point |
-| 9 | Evaluation | Regression suite for Module 7 | Datasets, evaluators, LLM-as-judge |
-| 10 | LangGraph | Approval-gated workflow | `StateGraph`, routing, human-in-the-loop |
-| 11 | Multi-Agent | Support triage system | Handoffs, supervisor pattern, cost discipline |
-| 12 | Production | Capstone: AI Helpdesk Assistant | Streaming, async, caching, deployment |
+| 8 | [Middleware](./langchain-008-middleware.md) | Custom middleware + built-in composition | The v1 extension point |
+| 9 | [Evaluation](./langchain-009-evaluation.md) | Regression suite for Module 7 | Datasets, evaluators, LLM-as-judge |
+| 10 | [LangGraph](./langchain-010-langgraph.md) | Approval-gated workflow | `StateGraph`, routing, human-in-the-loop |
+| 11 | [Multi-Agent](./langchain-011-multi-agent.md) | Support triage system | Handoffs, supervisor pattern, cost discipline |
+| 12 | [Production](./langchain-012-production.md) | Capstone: AI Helpdesk Assistant | Streaming, async, caching, deployment |
 
 ---
 

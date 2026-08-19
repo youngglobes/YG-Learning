@@ -369,4 +369,4 @@ Official documentation only, current as of `langchain` 1.3.x.
 
 ---
 
-*Next: Module 8 — Middleware. You will add PII redaction in front of the model call, which is the other half of the data-handling story started here.*
+*Next: [Module 8 — Middleware](./langchain-008-middleware.md). Cross-cutting behaviour — including the PII handling this module raised — without rewriting the agent.*
