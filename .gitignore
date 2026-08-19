@@ -24,6 +24,3 @@ site/
 .vscode/
 .idea/
 .DS_Store
-
-# MkDocs build output
-site/
