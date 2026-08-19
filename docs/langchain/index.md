@@ -5,7 +5,9 @@
 **Framework version:** LangChain v1.x (Python)
 **Estimated duration:** 8–10 weeks part-time, ~6 weeks full-time
 **Before you start:** [Choosing your model](./model-setup.md) — Claude or Ollama, your choice
-**Reviewing this material?** [Verification checklist](./VERIFICATION.md) — the behavioural claims that still need confirming against a live model
+**Working through it?** [8-week learning plan](./learning-plan.md) — what to read and build each week
+**Building something?** [Agent app template](../../templates/agent-app/README.md) — clone this for every project
+**Reviewing this material?** [Verification checklist](./VERIFICATION.md) — behavioural claims still needing confirmation against a live model
 
 ---
 
