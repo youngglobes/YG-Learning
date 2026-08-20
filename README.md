@@ -82,6 +82,29 @@ than a new module — record it and raise it.
 
 ---
 
+## Licence
+
+This repository is dual-licensed, which is the usual arrangement for a
+documentation project that also ships code.
+
+| What | Licence | Applies to |
+|---|---|---|
+| **Documentation** | [CC BY 4.0](./LICENSE) | `docs/`, `README.md`, and all prose |
+| **Code** | [MIT](./LICENSE-CODE) | `templates/`, `scripts/`, and every code sample |
+
+Copyright (c) 2026 YoungGlobes.
+
+In practice: you may share and adapt the written material, including
+commercially, as long as you credit YoungGlobes. You may use the code for
+anything, with no obligation beyond keeping the copyright notice.
+
+> Previously GPL-2.0. That is a software copyleft licence and a poor fit for
+> documentation — it would have required anyone reusing this material to
+> license their derivative work under GPL-2.0 as well. Changed before any
+> outside contributions made it difficult to change.
+
+---
+
 ## Contributing
 
 Keep a `STUCK.md` as you learn: what you expected, what happened, what fixed
