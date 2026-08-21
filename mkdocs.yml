@@ -40,17 +40,17 @@ nav:
       - Syllabus: langchain/index.md
       - Choosing your model: langchain/model-setup.md
       - 8-week plan: langchain/learning-plan.md
-      - "Phase 1 — Core":
+      - "Phase 1. Core":
           - "0 · Setup & Mental Model": langchain/langchain-000-setup-and-mental-model.md
           - "1 · Models & Messages": langchain/langchain-001-models-and-messages.md
           - "2 · Tools": langchain/langchain-002-tools.md
           - "3 · Agents & Tracing": langchain/langchain-003-agents-and-tracing.md
           - "4 · Structured Output": langchain/langchain-004-structured-output.md
-      - "Phase 2 — Retrieval":
+      - "Phase 2. Retrieval":
           - "5 · Memory & State": langchain/langchain-005-memory-and-state.md
           - "6 · Retrieval Foundations": langchain/langchain-006-retrieval-foundations.md
           - "7 · Agentic RAG": langchain/langchain-007-agentic-rag.md
-      - "Phase 3 — Production":
+      - "Phase 3. Production":
           - "8 · Middleware": langchain/langchain-008-middleware.md
           - "9 · Evaluation": langchain/langchain-009-evaluation.md
           - "10 · LangGraph": langchain/langchain-010-langgraph.md

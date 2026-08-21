@@ -1,9 +1,9 @@
-# Module 8 — Middleware
+# Module 8: Middleware
 
 **Phase:** Orchestration & Production
-**Prerequisites:** Modules 0–7
+**Prerequisites:** Modules 0-7
 **Verified against:** `langchain` 1.3.14, Python 3.12
-**Estimated time:** 4–5 hours
+**Estimated time:** 4-5 hours
 
 ---
 
@@ -11,7 +11,7 @@
 
 You have needed middleware three times already without naming it: capping the loop in Module 3, summarising history in Module 5, and the PII question that surfaced in Module 3's tracing section.
 
-Middleware is the v1 extension point — the supported way to insert behaviour into the agent loop without rewriting the agent. It has no equivalent in pre-v1 tutorials, which is why they resort to wrapping and subclassing.
+Middleware is the v1 extension point, the supported way to insert behaviour into the agent loop without rewriting the agent. It has no equivalent in pre-v1 tutorials, which is why they resort to wrapping and subclassing.
 
 The module also teaches a habit worth more than the API: **check what already exists before you build.**
 
@@ -101,7 +101,7 @@ def audit(state, runtime):
 
 Verified running: attached to an agent, this fired once for a one-turn conversation, receiving a state whose `messages` list had 1 entry.
 
-The decorators accept extra arguments — `@before_model(func, state_schema, tools, can_jump_to, name)` — and `@wrap_tool_call(func, tools, name)` lets you scope to specific tools. There is also `@dynamic_prompt(func)` for a system prompt computed per call.
+The decorators accept extra arguments, `@before_model(func, state_schema, tools, can_jump_to, name)`, and `@wrap_tool_call(func, tools, name)` lets you scope to specific tools. There is also `@dynamic_prompt(func)` for a system prompt computed per call.
 
 For anything stateful, subclass instead:
 
@@ -132,7 +132,7 @@ Reach for middleware when the behaviour is genuinely **cross-cutting**: it appli
 ## 3. Walkthrough
 
 ```python
-"""Module 8 — compose built-ins, then add one genuinely custom layer."""
+"""Module 8: compose built-ins, then add one genuinely custom layer."""
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -208,13 +208,13 @@ for row in AUDIT:
 .venv/bin/python middleware_demo.py
 ```
 
-**Expected output — illustrative.** Three structural checks:
+**Expected output, illustrative.** Three structural checks:
 
-1. The audit trail contains at least one `model_call` entry — your custom `before_model` ran.
+1. The audit trail contains at least one `model_call` entry, your custom `before_model` ran.
 2. It contains a `blocked` entry for `run_report`, and the agent's reply tells the user it is disabled rather than crashing.
-3. The email address does not appear verbatim in what was sent to the model — `PIIMiddleware` redacted it.
+3. The email address does not appear verbatim in what was sent to the model, `PIIMiddleware` redacted it.
 
-Then flip `ALLOW_EXPENSIVE = True` and re-run. The `blocked` entry becomes `tool_call` and the report runs. One flag, no change to the tool or the prompt — that is what "cross-cutting" buys you.
+Then flip `ALLOW_EXPENSIVE = True` and re-run. The `blocked` entry becomes `tool_call` and the report runs. One flag, no change to the tool or the prompt, that is what "cross-cutting" buys you.
 
 ---
 
@@ -232,9 +232,9 @@ Then flip `ALLOW_EXPENSIVE = True` and re-run. The `blocked` entry becomes `tool
 
 Two parts, deliberately.
 
-**Part A — composition.** Take your Module 7 RAG agent and add: PII redaction, summarisation, a model call limit, and tool retry. All four are built-ins. No custom code.
+**Part A, composition.** Take your Module 7 RAG agent and add: PII redaction, summarisation, a model call limit, and tool retry. All four are built-ins. No custom code.
 
-**Part B — one custom middleware** for something the library genuinely does not cover. Examples: writing every tool call to your own audit table; blocking requests outside business hours; injecting the current user's department into the system prompt via `@dynamic_prompt`; refusing queries containing customer identifiers.
+**Part B, one custom middleware** for something the library genuinely does not cover. Examples: writing every tool call to your own audit table; blocking requests outside business hours; injecting the current user's department into the system prompt via `@dynamic_prompt`; refusing queries containing customer identifiers.
 
 Deliverables:
 
@@ -262,11 +262,11 @@ That last note is the assessment. An answer of "I didn't look" fails, because §
 
 ## 8. Check yourself
 
-1. **Six hooks — which for an approval gate?**
+1. **Six hooks, which for an approval gate?**
    `wrap_tool_call`. It surrounds the tool call, so you can allow, block, or substitute a result.
 
 2. **Why is ordering significant?**
-   Middleware composes as layers; the first is outermost. Anything protective — redaction, budget checks — must sit outside what it protects.
+   Middleware composes as layers; the first is outermost. Anything protective, redaction, budget checks, must sit outside what it protects.
 
 3. **You need PII redaction. First move?**
    Check the built-ins. `PIIMiddleware` exists.
@@ -281,10 +281,10 @@ That last note is the assessment. An answer of "I didn't look" fails, because §
 
 ## 9. References
 
-- Middleware — https://docs.langchain.com/oss/python/langchain/middleware
-- Agents — https://docs.langchain.com/oss/python/langchain/agents
-- API reference — https://reference.langchain.com
+- Middleware: https://docs.langchain.com/oss/python/langchain/middleware
+- Agents: https://docs.langchain.com/oss/python/langchain/agents
+- API reference: https://reference.langchain.com
 
 ---
 
-*Next: [Module 9 — Evaluation](./langchain-009-evaluation.md). You have been changing prompts for eight modules with no way to tell whether you made things worse. That ends here.*
+*Next: [Module 9: Evaluation](./langchain-009-evaluation.md). You have been changing prompts for eight modules with no way to tell whether you made things worse. That ends here.*

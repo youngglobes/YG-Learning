@@ -1,9 +1,9 @@
-# Module 2 — Tools
+# Module 2: Tools
 
 **Phase:** Core
-**Prerequisites:** Modules 0–1
+**Prerequisites:** Modules 0-1
 **Verified against:** `langchain` 1.3.14, `langchain-core` 1.5.3, Python 3.12
-**Estimated time:** 4–5 hours
+**Estimated time:** 4-5 hours
 
 ---
 
@@ -11,7 +11,7 @@
 
 Tool quality determines agent quality more than prompt wording does.
 
-When an agent "won't use my tool", or calls it with nonsense arguments, or calls it on every turn including "thanks" — the cause is almost never the system prompt. It is the tool definition. The model chooses tools by reading their names, descriptions, and parameter schemas. That text *is* the interface, and most people write it as an afterthought.
+When an agent "won't use my tool", or calls it with nonsense arguments, or calls it on every turn including "thanks", the cause is almost never the system prompt. It is the tool definition. The model chooses tools by reading their names, descriptions, and parameter schemas. That text *is* the interface, and most people write it as an afterthought.
 
 This module is about writing that interface deliberately.
 
@@ -37,7 +37,7 @@ def get_weather(city: str, units: str = "c") -> str:
 
 The model never sees the body. It sees a name, a description, and a JSON schema. Which means **the docstring and the type hints are the entire contract.**
 
-### 2.2 `parse_docstring=True` — the flag nobody mentions
+### 2.2 `parse_docstring=True`, the flag nobody mentions
 
 Here is the same function decorated two ways. This is measured output, not an illustration:
 
@@ -61,17 +61,17 @@ args:        {"city":  {"description": "City name, e.g. Chennai",
 
 Look at what changed. Without the flag, your carefully written parameter docs get **dumped into the description as raw indented text**, and the schema carries **no parameter descriptions at all**. With it, the description is clean and each parameter is documented where the model expects to find it.
 
-If you write Google-style docstrings — and you should — **use `parse_docstring=True`**. Otherwise you did the work and threw away the benefit.
+If you write Google-style docstrings, and you should, **use `parse_docstring=True`**. Otherwise you did the work and threw away the benefit.
 
 ### 2.3 Describe *when* to call, not only *what* it does
 
 This is the highest-leverage sentence in the module.
 
 ```python
-# Weak — describes the function
+# Weak, describes the function
 """Search the policy database."""
 
-# Strong — describes the decision
+# Strong, describes the decision
 """Search YoungGlobes HR policy documents.
 
 Call this whenever the user asks about company policy, leave, expenses,
@@ -83,7 +83,7 @@ The model is not deciding *what your tool does*. It is deciding *whether this is
 
 ### 2.4 Errors the model can recover from
 
-By default a raised `ToolException` propagates and kills the run — verified:
+By default a raised `ToolException` propagates and kills the run, verified:
 
 ```python
 @tool
@@ -128,7 +128,7 @@ Three rules that matter more as the toolset grows:
 ## 3. Walkthrough
 
 ```python
-"""Module 2 — a small, well-specified toolset."""
+"""Module 2: a small, well-specified toolset."""
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -201,7 +201,7 @@ for q in [
 
 ## 4. Run it
 
-> **On a small local model, some checks below will fail — and that is expected.**
+> **On a small local model, some checks below will fail, and that is expected.**
 > The behavioural checks in this section depend on model capability. See the
 > capability tier table in [Choosing your model](./model-setup.md) before
 > concluding your code is wrong.
@@ -210,7 +210,7 @@ for q in [
 .venv/bin/python tools_demo.py
 ```
 
-**Expected output — illustrative.** What matters is the four behaviours, not the wording:
+**Expected output, illustrative.** What matters is the four behaviours, not the wording:
 
 1. **Chennai in fahrenheit** → calls `get_weather` with `units="fahrenheit"`. The enum did its job.
 2. **Paris** → calls the tool, gets your error string back, and *tells the user which cities are available* rather than crashing or inventing a temperature. This is recoverable-error handling working.
@@ -227,7 +227,7 @@ Number 4 is the one to watch. If it calls a tool on "thanks", your descriptions 
 
 **5.2 Apply.** Replace `get_weather`'s docstring with `"""Gets stuff."""` and re-run all four questions. Record what breaks. Then restore it and write two sentences on what the docstring is actually for.
 
-**5.3 Extend.** Add a third tool that deliberately overlaps — `lookup_temperature(location: str)` — and observe the agent choosing inconsistently between it and `get_weather`. Then fix it, either by merging the two or by making each description state clearly what the other handles. Write down which fix you chose and why.
+**5.3 Extend.** Add a third tool that deliberately overlaps, `lookup_temperature(location: str)`, and observe the agent choosing inconsistently between it and `get_weather`. Then fix it, either by merging the two or by making each description state clearly what the other handles. Write down which fix you chose and why.
 
 ---
 
@@ -237,7 +237,7 @@ Build a three-tool agent for a domain of your choice (not weather). Requirements
 
 - All three use `parse_docstring=True` with documented parameters
 - At least one parameter is constrained by `Literal` or an enum rather than prose
-- Every tool returns a **recoverable error string** for bad input — no raised exceptions reaching the user
+- Every tool returns a **recoverable error string** for bad input, no raised exceptions reaching the user
 - A `TOOLS.md` documenting, for each tool: when it should be called, when it should *not*, and what a compromised agent could do with it
 
 Then a short test file asserting:
@@ -253,7 +253,7 @@ The "when it should not be called" column of `TOOLS.md` is the part people skip 
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| Parameter descriptions missing from the schema | No `parse_docstring=True` | Add it — see §2.2 |
+| Parameter descriptions missing from the schema | No `parse_docstring=True` | Add it, see §2.2 |
 | Description contains a mangled `Args:` block | Same | Same |
 | Agent never calls the tool | Description says what it does, not when to use it | Rewrite for the decision (§2.3) |
 | Agent calls the tool on "hello" | No negative case in the description | Add "Do not call this for…" |
@@ -273,7 +273,7 @@ The "when it should not be called" column of `TOOLS.md` is the part people skip 
    `parse_docstring=True` is missing. Without it the `Args:` block is dumped into the description as raw text and the schema gets nothing.
 
 3. **Your agent calls a tool on every turn, including "thanks". Where do you fix it?**
-   The tool description — add the negative case. The system prompt is the second resort, not the first.
+   The tool description, add the negative case. The system prompt is the second resort, not the first.
 
 4. **Why return an error string rather than raise?**
    A returned string goes back to the model, which can correct itself and retry. A raised exception ends the run.
@@ -285,10 +285,10 @@ The "when it should not be called" column of `TOOLS.md` is the part people skip 
 
 ## 9. References
 
-- Tools — https://docs.langchain.com/oss/python/langchain/tools
-- Agents — https://docs.langchain.com/oss/python/langchain/agents
-- API reference — https://reference.langchain.com
+- Tools: https://docs.langchain.com/oss/python/langchain/tools
+- Agents: https://docs.langchain.com/oss/python/langchain/agents
+- API reference: https://reference.langchain.com
 
 ---
 
-*Next: [Module 3 — Agents & Tracing](./langchain-003-agents-and-tracing.md). You have been using `create_agent` for three modules; now you will look inside the loop.*
+*Next: [Module 3: Agents & Tracing](./langchain-003-agents-and-tracing.md). You have been using `create_agent` for three modules; now you will look inside the loop.*

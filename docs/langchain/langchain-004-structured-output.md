@@ -1,15 +1,15 @@
-# Module 4 — Structured Output
+# Module 4: Structured Output
 
 **Phase:** Core
-**Prerequisites:** Modules 0–3
+**Prerequisites:** Modules 0-3
 **Verified against:** `langchain` 1.3.14, `pydantic` 2.13.4, Python 3.12
-**Estimated time:** 4–5 hours
+**Estimated time:** 4-5 hours
 
 ---
 
 ## 1. Why this matters
 
-Everything so far ends in prose that a human reads. The moment another *system* consumes the output — a database, an API, a UI that renders fields — prose is a liability.
+Everything so far ends in prose that a human reads. The moment another *system* consumes the output, a database, an API, a UI that renders fields, prose is a liability.
 
 The gap between a demo and a product is usually one question: does this return parseable, validated data **every time**, or only most of the time? "Most of the time" fails at 3am on the input nobody tested.
 
@@ -23,7 +23,7 @@ This module closes that gap, and it is the last piece of the core.
 
 The instinct is to write *"Respond with JSON in this format: {...}"*. It mostly works, which is what makes it dangerous. It fails on markdown code fences, on a preamble ("Here's the JSON you asked for:"), on a trailing explanation, on a field the model decided to rename, and on any input that pushes it toward prose.
 
-The result is defensive parsing — strip the fences, find the first `{`, `json.loads`, catch, retry, hope. That code exists in a great many production systems and it should not.
+The result is defensive parsing, strip the fences, find the first `{`, `json.loads`, catch, retry, hope. That code exists in a great many production systems and it should not.
 
 Use a schema instead. The constraint moves from a *request* into the *contract*.
 
@@ -42,7 +42,7 @@ class Contact(BaseModel):
 
 Three things this gives you that a prompt does not:
 
-- **The field descriptions reach the model.** Same principle as tool docstrings in Module 2 — `Field(description=...)` is part of the interface, not a comment.
+- **The field descriptions reach the model.** Same principle as tool docstrings in Module 2: `Field(description=...)` is part of the interface, not a comment.
 - **Validation happens in your process.** A missing or mistyped field raises where you can catch it, rather than surfacing three layers downstream.
 - **Types are real.** `wants_demo` is a `bool`, not the string `"true"`.
 
@@ -50,16 +50,16 @@ Write descriptions for every non-obvious field. `name: str` with no description 
 
 ### 2.3 Two ways to get it
 
-**On the model** — for a single extraction call, no tools:
+**On the model**: for a single extraction call, no tools:
 
 ```python
 model = init_chat_model("anthropic:claude-opus-5")
 extractor = model.with_structured_output(Contact)
 contact = extractor.invoke("Hi, I'm Priya Raman from Acme...")
-# -> Contact(name='Priya Raman', ...) — a validated instance
+# -> Contact(name='Priya Raman', ...), a validated instance
 ```
 
-**On the agent** — when the agent may use tools first and *then* return structure:
+**On the agent**: when the agent may use tools first and *then* return structure:
 
 ```python
 agent = create_agent(
@@ -113,14 +113,14 @@ Bound the retries. Two is usually plenty; if it fails twice the input probably d
 
 ### 2.6 Streaming caveat
 
-If you stream a structured response, partially-populated arguments arrive mid-stream. Do not parse until the stream completes — a half-filled object validates as garbage or throws confusingly. Check for completeness first.
+If you stream a structured response, partially-populated arguments arrive mid-stream. Do not parse until the stream completes, a half-filled object validates as garbage or throws confusingly. Check for completeness first.
 
 ---
 
 ## 3. Walkthrough
 
 ```python
-"""Module 4 — validated extraction with bounded, informed retry."""
+"""Module 4: validated extraction with bounded, informed retry."""
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -197,7 +197,7 @@ for email in EMAILS:
 
 ## 4. Run it
 
-> **On a small local model, some checks below will fail — and that is expected.**
+> **On a small local model, some checks below will fail, and that is expected.**
 > The behavioural checks in this section depend on model capability. See the
 > capability tier table in [Choosing your model](./model-setup.md) before
 > concluding your code is wrong.
@@ -206,7 +206,7 @@ for email in EMAILS:
 .venv/bin/python extract.py
 ```
 
-**Expected output — illustrative.** The structural checks matter, not the values:
+**Expected output, illustrative.** The structural checks matter, not the values:
 
 ```
 --- Hi, I'm Priya Raman (priya@acmecorp.in) from Acme Corp...
@@ -220,7 +220,7 @@ for email in EMAILS:
      'wants_demo': False, 'urgency': 'low'}
 ```
 
-Check four things. You get a `dict` from a validated object, not a string you parsed. `wants_demo` is a real `bool`. `urgency` is one of the three allowed values. And in the second email — **`company` and `budget_inr` are `None`, not invented.** If either came back with a made-up value, your fields are not properly optional, and you have just watched §2.4 happen.
+Check four things. You get a `dict` from a validated object, not a string you parsed. `wants_demo` is a real `bool`. `urgency` is one of the three allowed values. And in the second email, **`company` and `budget_inr` are `None`, not invented.** If either came back with a made-up value, your fields are not properly optional, and you have just watched §2.4 happen.
 
 ---
 
@@ -236,17 +236,17 @@ Check four things. You get a `dict` from a validated object, not a string you pa
 
 ## 6. Assignment
 
-An extraction pipeline over a folder of at least 20 unstructured documents (invoices, CVs, or support emails — real-shaped, not toy).
+An extraction pipeline over a folder of at least 20 unstructured documents (invoices, CVs, or support emails, real-shaped, not toy).
 
 Requirements:
 
 - A Pydantic schema with described fields and correctly optional ones
 - At least two `field_validator`s enforcing real business rules
 - Bounded retry that **feeds the validation error back**, capped at two attempts
-- Failures routed to a `needs_review/` folder with the error recorded — never dropped, never guessed
+- Failures routed to a `needs_review/` folder with the error recorded, never dropped, never guessed
 - A summary report: extracted / retried-then-succeeded / sent to review
 
-Plus a short written answer to: **"which fields did the model invent when you made them required, and how did you catch it?"** If your answer is "it didn't", your test inputs are too clean — go and find a sparse one.
+Plus a short written answer to: **"which fields did the model invent when you made them required, and how did you catch it?"** If your answer is "it didn't", your test inputs are too clean, go and find a sparse one.
 
 ---
 
@@ -280,16 +280,16 @@ Plus a short written answer to: **"which fields did the model invent when you ma
    Identical input, prompt, and schema tends to reproduce the failure at double the cost. Include the error so the retry has something new to work with.
 
 5. **Structured output succeeded. Is the data correct?**
-   No — only correctly shaped. `email` is a string; whether it is a real address is what validators are for.
+   No, only correctly shaped. `email` is a string; whether it is a real address is what validators are for.
 
 ---
 
 ## 9. References
 
-- Structured output — https://docs.langchain.com/oss/python/langchain/structured-output
-- Agents (`response_format`) — https://docs.langchain.com/oss/python/langchain/agents
-- Pydantic — https://docs.pydantic.dev/latest/concepts/fields/
+- Structured output: https://docs.langchain.com/oss/python/langchain/structured-output
+- Agents (`response_format`): https://docs.langchain.com/oss/python/langchain/agents
+- Pydantic: https://docs.pydantic.dev/latest/concepts/fields/
 
 ---
 
-*End of Phase 1. You can now call models, define tools, run and debug an agent loop, and return validated data. Next: [Module 5 — Memory & State](./langchain-005-memory-and-state.md), where the agent stops forgetting you between turns.*
+*End of Phase 1. You can now call models, define tools, run and debug an agent loop, and return validated data. Next: [Module 5: Memory & State](./langchain-005-memory-and-state.md), where the agent stops forgetting you between turns.*

@@ -1,15 +1,15 @@
-# Module 5 — Memory & State
+# Module 5: Memory & State
 
 **Phase:** Retrieval & Memory
-**Prerequisites:** Modules 0–4
+**Prerequisites:** Modules 0-4
 **Verified against:** `langchain` 1.3.14, `langgraph` 1.2.10, Python 3.12
-**Estimated time:** 4–5 hours
+**Estimated time:** 4-5 hours
 
 ---
 
 ## 1. Why this matters
 
-Every agent you have written so far has amnesia. Ask it your name, then ask what your name is, and it does not know — each `invoke()` starts from nothing.
+Every agent you have written so far has amnesia. Ask it your name, then ask what your name is, and it does not know, each `invoke()` starts from nothing.
 
 This module fixes that. It is also the module where the internet will most aggressively mislead you, because "memory in LangChain" meant something completely different before v1, and the old names are everywhere.
 
@@ -61,7 +61,7 @@ Thread A accumulated the earlier turn. Thread B, a different `thread_id` against
 
 ### 2.3 The thread_id is a security boundary
 
-**Forget the `thread_id` and every user shares one conversation.** User B's next question arrives with User A's history attached — their name, their documents, whatever they said.
+**Forget the `thread_id` and every user shares one conversation.** User B's next question arrives with User A's history attached, their name, their documents, whatever they said.
 
 This is the most consequential one-line bug in the whole path. Treat `thread_id` as an authorisation decision, not a convenience:
 
@@ -73,7 +73,7 @@ This is the most consequential one-line bug in the whole path. Treat `thread_id`
 
 `InMemorySaver` dies with the process. It is for development.
 
-For persistence you need a separate package — it is **not** bundled:
+For persistence you need a separate package, it is **not** bundled:
 
 ```bash
 pip install langgraph-checkpoint-sqlite     # or langgraph-checkpoint-postgres
@@ -99,7 +99,7 @@ Two different problems that the word "memory" blurs together:
 | Mechanism | `checkpointer` | `store` |
 | Example | "as I said above…" | "always reply in Tamil" |
 
-`create_agent` accepts both. Most systems need the checkpointer long before they need the store — do not reach for long-term memory until you have a concrete fact that must outlive a conversation.
+`create_agent` accepts both. Most systems need the checkpointer long before they need the store, do not reach for long-term memory until you have a concrete fact that must outlive a conversation.
 
 ### 2.6 Conversations outgrow the context window
 
@@ -124,11 +124,11 @@ agent = create_agent(
 
 Its full parameter list is `model, trigger, keep, token_counter, summary_prompt, trim_tokens_to_summarize`.
 
-Summarisation is lossy by design. It is a trade — you exchange detail for the ability to continue. Set `keep` so that recent turns, which usually carry the actual task, survive intact.
+Summarisation is lossy by design. It is a trade, you exchange detail for the ability to continue. Set `keep` so that recent turns, which usually carry the actual task, survive intact.
 
 ### 2.7 What you persist is data you now hold
 
-A checkpointer writes conversations to disk. Those conversations contain whatever your users typed — names, salaries, medical details, complaints about colleagues.
+A checkpointer writes conversations to disk. Those conversations contain whatever your users typed, names, salaries, medical details, complaints about colleagues.
 
 Before enabling persistence on anything real, answer three questions: how long do you keep it, who can read the database, and what happens when someone asks to be deleted. "The framework does it automatically" is not an answer to any of them.
 
@@ -137,7 +137,7 @@ Before enabling persistence on anything real, answer three questions: how long d
 ## 3. Walkthrough
 
 ```python
-"""Module 5 — a multi-turn assistant with per-user threads."""
+"""Module 5: a multi-turn assistant with per-user threads."""
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -179,7 +179,7 @@ print(say("What team am I on?", "rahul"))          # must NOT know about Priya
 .venv/bin/python memory_demo.py
 ```
 
-**Expected output — illustrative:**
+**Expected output, illustrative:**
 
 ```
 --- thread: priya ---
@@ -187,12 +187,12 @@ Nice to meet you, Priya.
 You're on the Drupal team.
 
 --- thread: rahul (different user) ---
-I don't have that information — you haven't told me which team you're on.
+I don't have that information, you haven't told me which team you're on.
 ```
 
 Two checks, and the second is the important one. Thread `priya` **recalls** across separate `invoke()` calls. Thread `rahul` **does not know Priya's name or team**. If Rahul's answer mentions Drupal or Priya, your threading is broken and you have just reproduced the §2.3 bug in miniature.
 
-Then restart the process and re-run only the `rahul` thread. With `InMemorySaver` everything is gone — that is the §2.4 lesson, and it is the reason for the assignment below.
+Then restart the process and re-run only the `rahul` thread. With `InMemorySaver` everything is gone, that is the §2.4 lesson, and it is the reason for the assignment below.
 
 ---
 
@@ -252,7 +252,7 @@ Step 2 is the point. An in-process test that reuses the same object passes even 
 2. **Why is `thread_id` a security boundary?**
    It decides whose history loads. Shared or client-supplied, one user gets another's conversation.
 
-3. **`InMemorySaver` in production — what breaks?**
+3. **`InMemorySaver` in production, what breaks?**
    Every conversation is lost on restart or deploy, and nothing is shared between workers.
 
 4. **Difference between a checkpointer and a store?**
@@ -265,10 +265,10 @@ Step 2 is the point. An in-process test that reuses the same object passes even 
 
 ## 9. References
 
-- Memory and persistence — https://docs.langchain.com/oss/python/langchain/memory
-- Middleware — https://docs.langchain.com/oss/python/langchain/middleware
-- LangGraph persistence — https://docs.langchain.com/oss/python/langgraph/persistence
+- Memory and persistence: https://docs.langchain.com/oss/python/langchain/memory
+- Middleware: https://docs.langchain.com/oss/python/langchain/middleware
+- LangGraph persistence: https://docs.langchain.com/oss/python/langgraph/persistence
 
 ---
 
-*Next: [Module 6 — Retrieval Foundations](./langchain-006-retrieval-foundations.md), where the agent gains access to documents it was never trained on.*
+*Next: [Module 6: Retrieval Foundations](./langchain-006-retrieval-foundations.md), where the agent gains access to documents it was never trained on.*

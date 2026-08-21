@@ -1,9 +1,9 @@
-# Module 10 — LangGraph
+# Module 10: LangGraph
 
 **Phase:** Orchestration & Production
-**Prerequisites:** Modules 0–9
+**Prerequisites:** Modules 0-9
 **Verified against:** `langgraph` 1.2.10, `langchain` 1.3.14, Python 3.12
-**Estimated time:** 6–8 hours
+**Estimated time:** 6-8 hours
 
 ---
 
@@ -11,7 +11,7 @@
 
 `create_agent` has carried you through nine modules. It is the right tool most of the time, and you should keep reaching for it first.
 
-But it has one shape: the model decides what happens next. When *you* need to decide — this step always runs before that one, this branch needs a human signature, this failure retries down a different path — you need explicit control flow.
+But it has one shape: the model decides what happens next. When *you* need to decide, this step always runs before that one, this branch needs a human signature, this failure retries down a different path, you need explicit control flow.
 
 That is LangGraph. `create_agent` is built on it, so you are not leaving the framework; you are opening the box.
 
@@ -31,7 +31,7 @@ Stay with `create_agent` when:
 
 Move to `StateGraph` when:
 
-- **A step must always run** — validation, logging, a compliance check — regardless of model judgment
+- **A step must always run**: validation, logging, a compliance check, regardless of model judgment
 - **Branching is a business rule**, not a model decision ("refunds over ₹50,000 go to a manager")
 - **A human must approve** mid-flow, possibly hours later
 - **Different failures need different paths**
@@ -45,7 +45,7 @@ Honest heuristic: if you are writing the rule in your system prompt and hoping t
 from langgraph.graph import StateGraph, START, END
 ```
 
-**State** — a `TypedDict` that every node reads and writes:
+**State**: a `TypedDict` that every node reads and writes:
 
 ```python
 from typing import Annotated, TypedDict
@@ -59,7 +59,7 @@ class State(TypedDict):
 
 The `Annotated[..., add_messages]` part matters: it is a **reducer**, telling LangGraph how to merge a node's return into existing state. Without it, returning `messages` *replaces* the list; with it, the list is appended to. Replacing your message history by accident is the classic first LangGraph bug.
 
-**Nodes** — plain functions, state in, partial state out:
+**Nodes**: plain functions, state in, partial state out:
 
 ```python
 def check_amount(state: State) -> dict:
@@ -68,7 +68,7 @@ def check_amount(state: State) -> dict:
 
 Return only the keys you are changing.
 
-**Edges** — what runs next. Fixed, or conditional:
+**Edges**: what runs next. Fixed, or conditional:
 
 ```python
 builder = StateGraph(State)
@@ -89,7 +89,7 @@ graph = builder.compile(checkpointer=InMemorySaver())
 
 Verified builder methods: `add_node`, `add_edge`, `add_conditional_edges`, `add_sequence`, `compile`.
 
-Note the routing function is ordinary Python. **The branch is deterministic** — that is the entire point of using a graph here.
+Note the routing function is ordinary Python. **The branch is deterministic**: that is the entire point of using a graph here.
 
 ### 2.3 Human-in-the-loop
 
@@ -108,7 +108,7 @@ agent = create_agent(
 )
 ```
 
-Verified parameters: `interrupt_on`, `description_prefix`. Each entry accepts `allowed_decisions`, `description`, `args_schema`, and `when` — a predicate, so you can require approval only above a threshold.
+Verified parameters: `interrupt_on`, `description_prefix`. Each entry accepts `allowed_decisions`, `description`, `args_schema`, and `when`, a predicate, so you can require approval only above a threshold.
 
 **The graph route**, when the pause is a step in your flow:
 
@@ -120,19 +120,19 @@ def human_review(state: State) -> dict:
     return {"approved": decision == "approve"}
 ```
 
-`interrupt()` stops the graph and surfaces its payload. Later — a minute or a week — you resume:
+`interrupt()` stops the graph and surfaces its payload. Later, a minute or a week, you resume:
 
 ```python
 graph.invoke(Command(resume="approve"), config=config)
 ```
 
-**This only works with a checkpointer**, because the graph must persist to survive the wait. Module 5 was the prerequisite for this. And for a pause measured in hours, `InMemorySaver` is useless — use SQLite or Postgres.
+**This only works with a checkpointer**, because the graph must persist to survive the wait. Module 5 was the prerequisite for this. And for a pause measured in hours, `InMemorySaver` is useless, use SQLite or Postgres.
 
-`Command` carries `graph`, `update`, `resume`, `goto`, `PARENT` — so a node can both update state and direct control flow in one return.
+`Command` carries `graph`, `update`, `resume`, `goto`, `PARENT`, so a node can both update state and direct control flow in one return.
 
 ### 2.4 Cycles, and stopping them
 
-Graphs can loop — that is how `create_agent` works internally. Anything you build can loop too, and yours has no built-in agent cap.
+Graphs can loop, that is how `create_agent` works internally. Anything you build can loop too, and yours has no built-in agent cap.
 
 Always: give loops an explicit exit condition in the routing function, keep a counter in state, and set `recursion_limit` on invoke. Module 3's discipline applies here with more force, because now the loop is yours.
 
@@ -143,7 +143,7 @@ Always: give loops an explicit exit condition in the routing function, keep a co
 An expense approval flow: small claims auto-approve, large ones wait for a human.
 
 ```python
-"""Module 10 — deterministic routing with a human approval gate."""
+"""Module 10: deterministic routing with a human approval gate."""
 from typing import Annotated, TypedDict
 
 from langgraph.checkpoint.memory import InMemorySaver
@@ -247,7 +247,7 @@ invalid claim:
   -> REJECTED (by validation)
 ```
 
-Three checks. The small claim never paused. The large claim **stopped and waited** — and note the process could have exited between the pause and the resume, because state is checkpointed. And the invalid claim was rejected by `validate`, which ran unconditionally — no model was asked, no prompt was involved, and it cannot be talked out of it.
+Three checks. The small claim never paused. The large claim **stopped and waited**, and note the process could have exited between the pause and the resume, because state is checkpointed. And the invalid claim was rejected by `validate`, which ran unconditionally, no model was asked, no prompt was involved, and it cannot be talked out of it.
 
 That last point is the argument for this module. The rule "reject negative amounts" is now impossible to violate.
 
@@ -259,20 +259,20 @@ That last point is the argument for this module. The rule "reject negative amoun
 
 **5.2 Apply.** Delete `Annotated[list, add_messages]` from the state, making it a plain `list`, and re-run. Explain what happened to the message history and why the reducer exists.
 
-**5.3 Extend.** Add a `manager_review` node for amounts over ₹500,000, so there are two approval tiers. Then add a rejection path where a rejected claim routes back to a `revise` node — and make sure the cycle terminates.
+**5.3 Extend.** Add a `manager_review` node for amounts over ₹500,000, so there are two approval tiers. Then add a rejection path where a rejected claim routes back to a `revise` node, and make sure the cycle terminates.
 
 ---
 
 ## 6. Assignment
 
-An approval-gated workflow for a real process at YoungGlobes (leave requests, purchase orders, content publishing — your choice).
+An approval-gated workflow for a real process at YoungGlobes (leave requests, purchase orders, content publishing, your choice).
 
 Requirements:
 
 - At least one node that **always** runs, with a written note on why it must not be a model decision
 - Deterministic conditional routing on a business rule
 - A human approval gate using `interrupt`
-- **Persistent** checkpointing, so approval can happen after a process restart — demonstrate this
+- **Persistent** checkpointing, so approval can happen after a process restart, demonstrate this
 - A cycle (rejection → revision → resubmission) with a proven termination condition
 - A diagram of the graph, and a `WORKFLOW.md` naming which rules are enforced by the graph and which are left to the model
 
@@ -303,7 +303,7 @@ Plus a test that: starts a flow, **kills the process**, restarts it, resumes the
    Declares a reducer that appends rather than replaces, so nodes add to history instead of overwriting it.
 
 3. **What does `interrupt` require to be useful?**
-   A checkpointer — persistent, if the pause outlives the process.
+   A checkpointer, persistent, if the pause outlives the process.
 
 4. **Your graph is larger and harder to follow than the agent it replaced. What does that suggest?**
    Possibly that you did not need a graph. Check whether `create_agent` plus middleware covers it.
@@ -315,10 +315,10 @@ Plus a test that: starts a flow, **kills the process**, restarts it, resumes the
 
 ## 9. References
 
-- LangGraph overview — https://docs.langchain.com/oss/python/langgraph/overview
-- Human-in-the-loop — https://docs.langchain.com/oss/python/langgraph/human-in-the-loop
-- Persistence — https://docs.langchain.com/oss/python/langgraph/persistence
+- LangGraph overview: https://docs.langchain.com/oss/python/langgraph/overview
+- Human-in-the-loop: https://docs.langchain.com/oss/python/langgraph/human-in-the-loop
+- Persistence: https://docs.langchain.com/oss/python/langgraph/persistence
 
 ---
 
-*Next: [Module 11 — Multi-Agent](./langchain-011-multi-agent.md), the most fashionable and most frequently unnecessary pattern in the field.*
+*Next: [Module 11: Multi-Agent](./langchain-011-multi-agent.md), the most fashionable and most frequently unnecessary pattern in the field.*

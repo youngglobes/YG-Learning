@@ -1,9 +1,9 @@
-# Module 12 — Production
+# Module 12: Production
 
 **Phase:** Orchestration & Production
-**Prerequisites:** Modules 0–11
+**Prerequisites:** Modules 0-11
 **Verified against:** `langchain` 1.3.14, `langgraph` 1.2.10, Python 3.12
-**Estimated time:** 10–15 hours including the capstone
+**Estimated time:** 10-15 hours including the capstone
 
 ---
 
@@ -21,33 +21,33 @@ Production is none of those things. This module covers what changes, then the ca
 
 A ten-second wait with no output reads as broken. Streaming is a user-experience requirement, not a nicety.
 
-The compiled agent exposes `stream`, `astream`, `astream_events`, and `stream_events`. `stream` takes `stream_mode` among its parameters, and the modes behave differently — measured on a trivial one-turn run:
+The compiled agent exposes `stream`, `astream`, `astream_events`, and `stream_events`. `stream` takes `stream_mode` among its parameters, and the modes behave differently, measured on a trivial one-turn run:
 
 | `stream_mode` | Chunks | Chunk type | Use for |
 |---|---|---|---|
 | `values` | 2 | `dict` | full state after each step |
-| `updates` | 1 | `dict` | just what changed — usually what you want |
+| `updates` | 1 | `dict` | just what changed, usually what you want |
 | `messages` | 3 | `tuple` | token-by-token to a UI |
 | `debug` | 2 | `dict` | development |
-| `custom` | 0 | — | only what tools emit via the stream writer |
+| `custom` | 0 |, | only what tools emit via the stream writer |
 
 ```python
 for chunk in agent.stream({"messages": [...]}, stream_mode="messages"):
     ...   # push to the client
 ```
 
-`custom` returning nothing is not a bug — it carries only what your tools deliberately write.
+`custom` returning nothing is not a bug, it carries only what your tools deliberately write.
 
 For new applications LangChain recommends **event streaming**, the typed-projection API introduced in v1.3, which gives separate iterators per projection rather than branching on chunk shape. Reach for it when you are building a real UI; `stream_mode` is fine for scripts.
 
 ### 2.2 Async
 
-One user at a time is a synchronous problem. Many concurrent users is not — a blocking call holds a worker while it waits on a network round trip that may take seconds.
+One user at a time is a synchronous problem. Many concurrent users is not, a blocking call holds a worker while it waits on a network round trip that may take seconds.
 
 `ainvoke`, `astream`, and `astream_events` are all available. Two rules:
 
 - **Async all the way down.** One synchronous call in a tool blocks the event loop and wipes out the benefit.
-- **Async middleware for async agents.** The hooks have `a*` twins (`abefore_model`, `awrap_tool_call`) for a reason — a sync hook on an async path is a silent blocker.
+- **Async middleware for async agents.** The hooks have `a*` twins (`abefore_model`, `awrap_tool_call`) for a reason, a sync hook on an async path is a silent blocker.
 
 ### 2.3 Rate limits, retries, timeouts
 
@@ -56,14 +56,14 @@ Every provider rate-limits, and under real load you will hit it.
 - **Retry with exponential backoff and jitter.** Fixed-interval retries from many workers synchronise into a thundering herd.
 - **Retry 429 and 5xx; do not retry 400.** A malformed request is malformed forever.
 - **Set timeouts.** A hung request holding a worker forever is worse than a fast failure.
-- **`ModelFallbackMiddleware`** switches provider or model when the primary fails — often better than retrying into a wall.
+- **`ModelFallbackMiddleware`** switches provider or model when the primary fails, often better than retrying into a wall.
 - `ToolRetryMiddleware` covers flaky tools, with `max_retries`, `backoff_factor`, `initial_delay`, `max_delay`, and `jitter`.
 
 ### 2.4 Cost control
 
 The four levers, in order of impact:
 
-1. **Prompt caching.** Large stable prefixes — system prompt, tool definitions, retrieved context — can be cached by most providers at a large discount. The biggest single win for agent workloads, because that prefix is re-sent every step (Module 1 §2.4).
+1. **Prompt caching.** Large stable prefixes, system prompt, tool definitions, retrieved context, can be cached by most providers at a large discount. The biggest single win for agent workloads, because that prefix is re-sent every step (Module 1 §2.4).
 2. **Right-sized models.** Classification and routing rarely need a frontier model. Reserve it for synthesis.
 3. **Caps everywhere.** `ModelCallLimitMiddleware` on every agent. A bug without a cap is an invoice.
 4. **Context management.** `SummarizationMiddleware` and `ContextEditingMiddleware` keep transcripts from growing without bound.
@@ -89,11 +89,11 @@ The general rule: **degrade visibly rather than fail silently.** A wrong answer 
 Everything from earlier modules, in one place:
 
 - **Prompt injection** via retrieved documents and user input (Module 7). Prompt defence plus least-privilege tools.
-- **Thread isolation** — `thread_id` from the authenticated session, never client-supplied (Module 5 §2.3).
+- **Thread isolation**: `thread_id` from the authenticated session, never client-supplied (Module 5 §2.3).
 - **Secrets** in a secret manager, never in prompts, code, or checkpoints.
-- **PII** — `PIIMiddleware`, and a decision about what traces and checkpoints retain (Modules 3 §2.5, 8).
-- **Least privilege** — each agent gets only the tools its job needs (Modules 7, 11).
-- **Output handling** — never `eval` model output; parameterise any query built from it; escape anything rendered.
+- **PII**: `PIIMiddleware`, and a decision about what traces and checkpoints retain (Modules 3 §2.5, 8).
+- **Least privilege**: each agent gets only the tools its job needs (Modules 7, 11).
+- **Output handling**: never `eval` model output; parameterise any query built from it; escape anything rendered.
 - **Rate limit your own endpoint**, or one user can spend your entire budget.
 
 ### 2.7 Observability
@@ -105,7 +105,7 @@ Tracing (Module 3) plus operational metrics. Alert on: error rate, p95 latency, 
 ## 3. Walkthrough
 
 ```python
-"""Module 12 — production-shaped skeleton: async, streaming, caps, fallback."""
+"""Module 12: production-shaped skeleton: async, streaming, caps, fallback."""
 import asyncio
 from dotenv import load_dotenv
 load_dotenv()
@@ -168,7 +168,7 @@ Note the middleware ordering, the `thread_id` derived from the session rather th
 .venv/bin/python service.py
 ```
 
-**Expected output — illustrative.** Structural checks: output arrives **incrementally**, not in one block at the end; two different `session_id` values produce isolated conversations; and forcing an exception (point the model at a bad name) yields the `error` message rather than a stack trace.
+**Expected output, illustrative.** Structural checks: output arrives **incrementally**, not in one block at the end; two different `session_id` values produce isolated conversations; and forcing an exception (point the model at a bad name) yields the `error` message rather than a stack trace.
 
 ---
 
@@ -178,11 +178,11 @@ Note the middleware ordering, the `thread_id` derived from the session rather th
 
 **5.2 Apply.** Run the same agent with `stream_mode` set to `values`, `updates`, and `messages`. Record chunk counts and types. Decide which you would send to a browser and justify it.
 
-**5.3 Extend.** Add a synchronous `time.sleep(2)` inside a tool on the async path and measure throughput under ten concurrent requests. Then make it async and measure again. Report both numbers — this is §2.2 made concrete.
+**5.3 Extend.** Add a synchronous `time.sleep(2)` inside a tool on the async path and measure throughput under ten concurrent requests. Then make it async and measure again. Report both numbers, this is §2.2 made concrete.
 
 ---
 
-## 6. Capstone — AI Helpdesk Assistant
+## 6. Capstone. AI Helpdesk Assistant
 
 Everything from the path, in one system.
 
@@ -202,12 +202,12 @@ Everything from the path, in one system.
 
 **Deliverables**
 1. **Source code**, running from a clean clone with documented setup
-2. **README** — architecture, setup, configuration
+2. **README**: architecture, setup, configuration
 3. **Architecture diagram**
 4. **Eval suite** (Module 9) with ≥30 examples and a passing CI job
-5. **Cost model** — measured cost per conversation, and per 1,000 conversations
+5. **Cost model**: measured cost per conversation, and per 1,000 conversations
 6. **Security review** covering §2.6, naming at least one real residual risk you found yourself
-7. **Runbook** — what alerts exist, what to do when each fires
+7. **Runbook**: what alerts exist, what to do when each fires
 
 **Pass criteria**
 - Runs from a clean clone
@@ -216,7 +216,7 @@ Everything from the path, in one system.
 - The security review names a real risk, not a generic checklist
 - **A deliberate injection attempt in the corpus fails to compromise it** (Module 7)
 
-**Assessment weighting:** roughly half the marks are on items 4–7. A system that works but that you cannot measure, cost, secure, or operate is a prototype. The path has been building toward the difference.
+**Assessment weighting:** roughly half the marks are on items 4-7. A system that works but that you cannot measure, cost, secure, or operate is a prototype. The path has been building toward the difference.
 
 ---
 
@@ -257,10 +257,10 @@ Everything from the path, in one system.
 
 ## 9. References
 
-- Streaming — https://docs.langchain.com/oss/python/langchain/streaming
-- Middleware — https://docs.langchain.com/oss/python/langchain/middleware
-- LangSmith observability — https://docs.langchain.com/langsmith/observability
-- API reference — https://reference.langchain.com
+- Streaming: https://docs.langchain.com/oss/python/langchain/streaming
+- Middleware: https://docs.langchain.com/oss/python/langchain/middleware
+- LangSmith observability: https://docs.langchain.com/langsmith/observability
+- API reference: https://reference.langchain.com
 
 ---
 

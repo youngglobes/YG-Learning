@@ -10,16 +10,16 @@ This tutorial supports **two setups**. Pick one:
 | Needs | an API key | a reasonably specced machine |
 | Setup | ~5 min | ~20 min |
 | Speed | fast | depends on your hardware |
-| Behaves as the modules describe | yes | mostly — see capability tiers below |
+| Behaves as the modules describe | yes | mostly, see capability tiers below |
 
 **Nobody is required to buy anything.** Ollama completes every module at no
 cost. If you already have a Claude key, or would rather spend a few hundred
 rupees than wait on a slow local model, use that instead. Your call.
 
 These two are what the examples are written and maintained for. LangChain
-speaks to **23 providers** through the same `provider:model` interface —
-OpenAI, Gemini, Groq, Mistral, DeepSeek, OpenRouter, Bedrock, Vertex and more
-— and you are welcome to use any of them. Nothing here has been checked
+speaks to **23 providers** through the same `provider:model` interface,
+including OpenAI, Gemini, Groq, Mistral, DeepSeek, OpenRouter, Bedrock and
+Vertex. You are welcome to use any of them, but nothing here has been checked
 against them, so you are on your own for differences. The full list, with the
 package and example model string for each, is in the `.env` example in
 [Module 0](./langchain-000-setup-and-mental-model.md) and in
@@ -27,8 +27,8 @@ package and example model string for each, is in the `.env` example in
 
 > **Verification status, stated plainly:** every code sample has been run
 > against the installed packages, so imports, signatures, and data structures
-> are correct. The *behavioural* checks — does the agent decline, does it
-> resist injection — have not yet been confirmed against a live model on
+> are correct. The *behavioural* checks, does the agent decline, does it
+> resist injection, have not yet been confirmed against a live model on
 > either setup. Treat the "Expected output" blocks as illustrative until
 > someone completes a cohort and corrects them.
 
@@ -40,8 +40,8 @@ model="anthropic:claude-haiku-4-5"   # Claude - cheapest, $1/$5 per MTok
 model="ollama:llama3.1:8b"           # Ollama
 ```
 
-**A practical middle path:** start on Ollama for Modules 0–9, then switch to
-Claude for Modules 10–12 and the capstone, where reasoning quality is the
+**A practical middle path:** start on Ollama for Modules 0-9, then switch to
+Claude for Modules 10-12 and the capstone, where reasoning quality is the
 actual subject. Costs a fraction of the full-path figure and defers any
 spending decision until you already know the path is worth it to you.
 
@@ -51,7 +51,7 @@ spending decision until you already know the path is worth it to you.
 
 ### Will your machine cope?
 
-Check first — this matters more than people expect:
+Check first, this matters more than people expect:
 
 ```bash
 free -h                  # Linux / WSL: look at "total"
@@ -72,16 +72,16 @@ processors=4
 
 | Free RAM | Model | Speed, CPU-only | Verdict |
 |---|---|---|---|
-| < 6 GB | — | — | Not viable. Use route B, or route C for the no-model modules |
-| 6–8 GB | `llama3.2:3b` | 8–15 tok/s | Works, but weak at tool calling — read the tier table below |
-| 8–16 GB | `llama3.1:8b` | 3–6 tok/s CPU · much faster with an NVIDIA GPU | The realistic local choice |
+| < 6 GB |, |, | Not viable. Use route B, or route C for the no-model modules |
+| 6-8 GB | `llama3.2:3b` | 8-15 tok/s | Works, but weak at tool calling, read the tier table below |
+| 8-16 GB | `llama3.1:8b` | 3-6 tok/s CPU · much faster with an NVIDIA GPU | The realistic local choice |
 | 16 GB+ with GPU | `qwen2.5:14b` or larger | fast | Comfortable |
 
 **An NVIDIA GPU changes everything; an Intel or AMD integrated GPU does not.**
 If `nvidia-smi` errors, assume CPU speeds from the table.
 
 Remember agent loops multiply this. One turn with a tool call is 2+ model calls,
-so 5 tok/s feels like 15–20 seconds per turn, and Module 11's multi-agent
+so 5 tok/s feels like 15-20 seconds per turn, and Module 11's multi-agent
 exercises will feel slow enough to be annoying.
 
 ### Install
@@ -105,10 +105,10 @@ model = init_chat_model("ollama:llama3.1:8b")
 ## Claude (hosted)
 
 Get a key from the Anthropic console. Set a **hard spend cap there before your
-first call** — that is Module 0's first assignment and it is not
+first call**: that is Module 0's first assignment and it is not
 ceremony.
 
-Rough cost for the *entire* 13-module path with exercises — around 1,000 agent
+Rough cost for the *entire* 13-module path with exercises, around 1,000 agent
 runs, ~5M input and ~0.5M output tokens:
 
 | Model | Whole path | Per MTok in / out |
@@ -117,8 +117,8 @@ runs, ~5M input and ~0.5M output tokens:
 | Claude Sonnet 5 | ~$15 (~₹1,300) | $2 / $10 |
 | Claude Opus 5 | ~$38 (~₹3,300) | $5 / $25 |
 
-A small fast model is genuinely fine for Modules 0–9. Save the expensive one
-for Modules 10–12 where reasoning quality is the actual subject.
+A small fast model is genuinely fine for Modules 0-9. Save the expensive one
+for Modules 10-12 where reasoning quality is the actual subject.
 
 ---
 
@@ -126,14 +126,14 @@ for Modules 10–12 where reasoning quality is the actual subject.
 
 If you are still sorting out access, you are not blocked:
 
-- **Module 6 (Retrieval Foundations)** — embeddings run locally on CPU. No LLM,
+- **Module 6 (Retrieval Foundations)**: embeddings run locally on CPU. No LLM,
   no key. It is one of the biggest modules and entirely doable offline.
-- **Module 1 (Models & Messages)** — the message-structure half works against
+- **Module 1 (Models & Messages)**: the message-structure half works against
   any model, including a tiny local one.
 
 ---
 
-## Capability tiers — read this before you think you broke something
+## Capability tiers, read this before you think you broke something
 
 Several modules ask you to verify a **behaviour**, not just that code runs. Some
 of those behaviours depend on how capable your model is. If a check below fails
@@ -175,8 +175,8 @@ Embeddings:       sentence-transformers/all-MiniLM-L6-v2 (local)
 ```
 
 When you compare results with a colleague and they differ, the model is the
-first thing to check — and you will only know if you wrote it down.
+first thing to check, and you will only know if you wrote it down.
 
 ---
 
-*Next: [Module 0 — Setup & Mental Model](./langchain-000-setup-and-mental-model.md).*
+*Next: [Module 0: Setup & Mental Model](./langchain-000-setup-and-mental-model.md).*

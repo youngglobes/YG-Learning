@@ -1,9 +1,9 @@
-# Module 3 — Agents & Tracing
+# Module 3: Agents & Tracing
 
 **Phase:** Core
-**Prerequisites:** Modules 0–2
+**Prerequisites:** Modules 0-2
 **Verified against:** `langchain` 1.3.14, `langgraph` 1.2.10, Python 3.12
-**Estimated time:** 4–5 hours
+**Estimated time:** 4-5 hours
 
 ---
 
@@ -13,7 +13,7 @@ This is the centre of the framework, and it is the first point where you cannot 
 
 Your code says `agent.invoke(...)`. What happens next is a loop you did not write, driven by decisions a model made, across several round trips. When the answer is wrong, the question "which step went wrong?" is not answerable from the source. You need to see the run.
 
-So this module does two things at once: it opens up the loop, and it gets you tracing — because after this point, tracing is how you debug everything.
+So this module does two things at once: it opens up the loop, and it gets you tracing, because after this point, tracing is how you debug everything.
 
 ---
 
@@ -48,7 +48,7 @@ You know four of these already. Here is where the rest arrive:
 
 | Parameter | Module |
 |---|---|
-| `model`, `tools`, `system_prompt` | 0–2 |
+| `model`, `tools`, `system_prompt` | 0-2 |
 | `response_format` | 4 (structured output) |
 | `checkpointer`, `store` | 5 (memory) |
 | `middleware` | 8 |
@@ -57,7 +57,7 @@ You know four of these already. Here is where the rest arrive:
 
 You do not need to learn them now. You need to know the list exists, so that when you want a behaviour you look here first instead of writing it yourself.
 
-### 2.3 Capping the loop — three different limits
+### 2.3 Capping the loop, three different limits
 
 An agent that never terminates is the failure mode that costs money. There are three separate caps and they do different things:
 
@@ -77,9 +77,9 @@ agent = create_agent(
 agent.invoke({"messages": [...]}, config={"recursion_limit": 25})
 ```
 
-- `ModelCallLimitMiddleware(run_limit=N)` — the cost cap. Model calls are what you pay for.
-- `ToolCallLimitMiddleware(tool_name=..., run_limit=N)` — stops one expensive or destructive tool being hammered.
-- `recursion_limit` — the framework's backstop against a runaway graph.
+- `ModelCallLimitMiddleware(run_limit=N)`, the cost cap. Model calls are what you pay for.
+- `ToolCallLimitMiddleware(tool_name=..., run_limit=N)`, stops one expensive or destructive tool being hammered.
+- `recursion_limit`, the framework's backstop against a runaway graph.
 
 Both middleware also take `thread_limit` (across a whole conversation, not just one run) and `exit_behavior` (what happens on hitting the cap).
 
@@ -87,7 +87,7 @@ Both middleware also take `thread_limit` (across a whole conversation, not just 
 
 ### 2.4 Tracing
 
-You cannot reason about the loop from stdout. Tracing records every step — each model call, its inputs, its outputs, each tool invocation, token counts, and latency.
+You cannot reason about the loop from stdout. Tracing records every step, each model call, its inputs, its outputs, each tool invocation, token counts, and latency.
 
 Turn it on with environment variables; no code change:
 
@@ -100,7 +100,7 @@ export LANGSMITH_PROJECT=yg-learning
 Run your agent, then open the trace. What to look at, in order:
 
 1. **How many model calls?** More than you expected means a loop you did not intend.
-2. **What did the model actually receive?** Not what you think you sent — what is in the message list at each step.
+2. **What did the model actually receive?** Not what you think you sent, what is in the message list at each step.
 3. **Which tool call went wrong?** Usually visible immediately once you can see the arguments.
 4. **Where did the tokens go?** Almost always the re-sent history from Module 1, §2.4.
 
@@ -115,7 +115,7 @@ Traces contain your prompts, your documents, and your users' messages. Before po
 ## 3. Walkthrough
 
 ```python
-"""Module 3 — watching the loop."""
+"""Module 3: watching the loop."""
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -168,13 +168,13 @@ usage = result["messages"][-1].usage_metadata
 print(f"\nfinal-call tokens: {usage}")
 ```
 
-Note the question needs **two** lookups. Watch how the model handles that — it may call the tool twice in one turn, or once per turn across two turns. Both are valid, and the trace shows you which.
+Note the question needs **two** lookups. Watch how the model handles that, it may call the tool twice in one turn, or once per turn across two turns. Both are valid, and the trace shows you which.
 
 ---
 
 ## 4. Run it
 
-> **On a small local model, some checks below will fail — and that is expected.**
+> **On a small local model, some checks below will fail, and that is expected.**
 > The behavioural checks in this section depend on model capability. See the
 > capability tier table in [Choosing your model](./model-setup.md) before
 > concluding your code is wrong.
@@ -185,14 +185,14 @@ export LANGSMITH_API_KEY=lsv2_...
 .venv/bin/python agent_loop.py
 ```
 
-**Expected output — illustrative.** The structure is the point:
+**Expected output, illustrative.** The structure is the point:
 
 ```
 0. HumanMessage   Compare the weather in Chennai and Delhi.
 1. AIMessage      WANTS TOOLS: [('get_weather', {'city': 'Chennai'}), ...]
 2. ToolMessage    32C in Chennai
 3. ToolMessage    38C in Delhi
-4. AIMessage      Delhi is 6C hotter than Chennai — 38C against 32C.
+4. AIMessage      Delhi is 6C hotter than Chennai, 38C against 32C.
 ```
 
 Three checks: the message list alternates as described in Module 1; at least one `AIMessage` carries `tool_calls`; and the number of `ToolMessage`s equals the number of lookups the question required. Then open the trace and confirm the same run from the other side.
@@ -203,13 +203,13 @@ Three checks: the message list alternates as described in Module 1; at least one
 
 **5.1 Recall.** Describe the agent loop in three sentences without looking. What ends it?
 
-**5.2 Apply.** Set `ModelCallLimitMiddleware(run_limit=1)` and re-run. Observe what a too-tight cap does — the agent cannot both call a tool and answer. Write down what the user sees, and why that is a bad failure mode to ship.
+**5.2 Apply.** Set `ModelCallLimitMiddleware(run_limit=1)` and re-run. Observe what a too-tight cap does, the agent cannot both call a tool and answer. Write down what the user sees, and why that is a bad failure mode to ship.
 
 **5.3 Extend.** Write a tool that always returns `"Task not complete, try again."` and give the agent a task using it. Watch it loop. Confirm your cap stops it. Then check the trace and calculate what that run cost.
 
 ---
 
-## 6. Assignment — diagnose from the trace alone
+## 6. Assignment, diagnose from the trace alone
 
 You will be given a deliberately broken agent (`broken_agent.py`, in the module's `code/` folder). It loops until it hits the cap on a simple question.
 
@@ -218,7 +218,7 @@ You will be given a deliberately broken agent (`broken_agent.py`, in the module'
 Produce a short report:
 
 1. How many model calls before the cap, and the total token cost
-2. The exact step where it first goes wrong — with the message contents that prove it
+2. The exact step where it first goes wrong, with the message contents that prove it
 3. Root cause
 4. Your fix, and a trace of the fixed run showing the call count dropping
 
@@ -243,16 +243,16 @@ The constraint is the assignment. In production you often have the trace and not
 ## 8. Check yourself
 
 1. **What ends the agent loop?**
-   The model returning a response with no tool calls — or a cap firing.
+   The model returning a response with no tool calls, or a cap firing.
 
 2. **Which of the three caps protects you from cost?**
-   `ModelCallLimitMiddleware` — model calls are the billable unit. `recursion_limit` is a backstop, not a budget.
+   `ModelCallLimitMiddleware`, model calls are the billable unit. `recursion_limit` is a backstop, not a budget.
 
 3. **Your agent gave a wrong answer. What is your first move?**
    Open the trace and read what the model received at each step. Not: edit the prompt and re-run.
 
 4. **A run made 14 model calls for a one-lookup question. What are you looking for in the trace?**
-   The tool result the model keeps treating as incomplete — the loop is re-calling because the result never reads as done.
+   The tool result the model keeps treating as incomplete, the loop is re-calling because the result never reads as done.
 
 5. **Why is tracing introduced in Module 3 rather than at the end?**
    Because every module after this is debugged through it. Learning to build without it teaches guessing.
@@ -261,11 +261,11 @@ The constraint is the assignment. In production you often have the trace and not
 
 ## 9. References
 
-- Agents — https://docs.langchain.com/oss/python/langchain/agents
-- Middleware — https://docs.langchain.com/oss/python/langchain/middleware
-- LangSmith tracing — https://docs.langchain.com/langsmith/observability
-- API reference — https://reference.langchain.com
+- Agents: https://docs.langchain.com/oss/python/langchain/agents
+- Middleware: https://docs.langchain.com/oss/python/langchain/middleware
+- LangSmith tracing: https://docs.langchain.com/langsmith/observability
+- API reference: https://reference.langchain.com
 
 ---
 
-*Next: [Module 4 — Structured Output](./langchain-004-structured-output.md). The last piece of the core, and the one that turns a demo into something another system can consume.*
+*Next: [Module 4: Structured Output](./langchain-004-structured-output.md). The last piece of the core, and the one that turns a demo into something another system can consume.*
