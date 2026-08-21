@@ -6,7 +6,7 @@ This tutorial supports **two setups**. Pick one:
 
 | | **Claude** (hosted) | **Ollama** (local) |
 |---|---|---|
-| Cost | you pay, ~₹700 for the whole path | free |
+| Cost | you pay, ~₹700 for the whole path on Haiku 4.5 | free |
 | Needs | an API key | a reasonably specced machine |
 | Setup | ~5 min | ~20 min |
 | Speed | fast | depends on your hardware |
@@ -32,7 +32,7 @@ Switching is one string, and that single-line swap *is* one of LangChain's real
 selling points. You will be learning it by living it:
 
 ```python
-model="anthropic:claude-haiku-4-5"   # Claude
+model="anthropic:claude-haiku-4-5"   # Claude - cheapest, $1/$5 per MTok
 model="ollama:llama3.1:8b"           # Ollama
 ```
 
@@ -107,11 +107,11 @@ ceremony.
 Rough cost for the *entire* 13-module path with exercises — around 1,000 agent
 runs, ~5M input and ~0.5M output tokens:
 
-| Model | Whole path |
-|---|---|
-| Claude Haiku 4.5 | ~$8 (~₹700) |
-| Claude Sonnet 5 | ~$23 (~₹2,000) |
-| Claude Opus 5 | ~$38 (~₹3,300) |
+| Model | Whole path | Per MTok in / out |
+|---|---|---|
+| Claude Haiku 4.5 | ~$8 (~₹700) | $1 / $5 |
+| Claude Sonnet 5 | ~$15 (~₹1,300) | $2 / $10 |
+| Claude Opus 5 | ~$38 (~₹3,300) | $5 / $25 |
 
 A small fast model is genuinely fine for Modules 0–9. Save the expensive one
 for Modules 10–12 where reasoning quality is the actual subject.
