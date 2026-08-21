@@ -16,7 +16,7 @@ matching model string. **Nothing else in the tutorial changes.**
 | Provider | Install | API key variable | Example model string |
 |---|---|---|---|
 | OpenAI | `"langchain[openai]"` | `OPENAI_API_KEY` | `openai:gpt-5.5` |
-| Google Gemini | `"langchain[google-genai]"` | `GOOGLE_API_KEY` | `google_genai:gemini-2.5-flash-lite` |
+| Google Gemini | `"langchain[google-genai]"` | `GOOGLE_API_KEY` | `google_genai:gemini-flash-latest` |
 | Anthropic | `"langchain[anthropic]"` | `ANTHROPIC_API_KEY` | `anthropic:claude-haiku-4-5` |
 | Groq | `"langchain[groq]"` | `GROQ_API_KEY` | `groq:llama-3.3-70b-versatile` |
 | Mistral | `"langchain[mistralai]"` | `MISTRAL_API_KEY` | `mistralai:mistral-large-latest` |
@@ -33,6 +33,13 @@ matching model string. **Nothing else in the tutorial changes.**
 | OpenRouter | `pip install langchain-openrouter` | `OPENROUTER_API_KEY` | `openrouter:anthropic/claude-sonnet-4-6` |
 | **Ollama (local)** | `"langchain[ollama]"` | **none** | `ollama:llama3.1:8b` |
 
+> **Model names go stale, and a listed model is not always a usable one.**
+> Verified on a fresh Google free-tier key: `gemini-2.5-flash` appears in the
+> models list but returns `404 NOT_FOUND, no longer available to new users`
+> when you actually call it. Prefer an alias like `gemini-flash-latest` that
+> tracks the current release, and if a model string fails, list what your key
+> can actually reach rather than guessing.
+
 There are 23 providers registered in total. If yours is missing from this
 table, check the
 [integrations index](https://docs.langchain.com/oss/python/integrations/providers).
@@ -43,7 +50,7 @@ That is the whole point, and it is worth seeing directly:
 
 ```python
 MODEL = "openai:gpt-5.5"                      # or
-MODEL = "google_genai:gemini-2.5-flash-lite"  # or
+MODEL = "google_genai:gemini-flash-latest"  # or
 MODEL = "anthropic:claude-haiku-4-5"          # or
 MODEL = "ollama:llama3.1:8b"                  # or any of the others
 

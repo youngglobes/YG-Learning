@@ -15,11 +15,14 @@ Then fix the module (or tell me and I will).
 **Record your setup first**, because these results are model-dependent:
 
 ```
-Setup:        Claude / Ollama
-Model:        ...
-Date:         ...
-Tested by:    ...
+Setup:        Google AI Studio, free tier
+Model:        google_genai:gemini-flash-latest
+Date:         2026-08-21
+Tested by:    Pravin
 ```
+
+**First pass results are recorded below.** Module 0 is confirmed against a
+live model. Everything else is still open.
 
 ---
 
@@ -27,8 +30,18 @@ Tested by:    ...
 
 | # | Claim | ✓ | Notes |
 |---|---|---|---|
-| 0.1 | The one-screen agent returns a real answer | ☐ | |
-| 0.2 | Changing `get_weather` to return `"It's -40°C"` **changes the answer**, proving the tool was genuinely called, not imagined | ☐ | |
+| 0.1 | The one-screen agent returns a real answer | ✅ | `The current weather in Chennai is 32°C and humid.` |
+| 0.2 | Changing `get_weather` to return `"It's -40°C"` **changes the answer**, proving the tool was genuinely called, not imagined | ✅ | `The current weather in Chennai is reported as -40°C with a blizzard.` Chennai is not in a blizzard, so the tool was genuinely called. |
+
+**Module 0 verified 2026-08-21** on `google_genai:gemini-flash-latest`,
+langchain 1.3.16. Also confirmed working on `gemini-3.6-flash`,
+`gemini-3.7-flash` and `gemini-flash-lite-latest`.
+
+**One defect found and fixed:** the docs used `gemini-2.5-flash-lite`, which
+returns `404 NOT_FOUND, no longer available to new users` on a fresh key even
+though it still appears in the models list. Docs now use the
+`gemini-flash-latest` alias, and the trap is recorded in Module 0's Common
+failures table.
 
 ---
 

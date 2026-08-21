@@ -127,7 +127,7 @@ will uncomment lines as later modules need them.
 #   provider:model                                    key variable
 #   ------------------------------------------------  ----------------------
 #   openai:gpt-5.5                                    OPENAI_API_KEY
-#   google_genai:gemini-2.5-flash-lite                GOOGLE_API_KEY
+#   google_genai:gemini-flash-latest                GOOGLE_API_KEY
 #   anthropic:claude-haiku-4-5                        ANTHROPIC_API_KEY
 #   groq:llama-3.3-70b-versatile                      GROQ_API_KEY
 #   mistralai:mistral-large-latest                    MISTRAL_API_KEY
@@ -149,7 +149,7 @@ AGENT_MODEL=openai:gpt-5.5
 OPENAI_API_KEY=sk-...
 
 # --- other providers: uncomment the pair you use ---------------------
-# AGENT_MODEL=google_genai:gemini-2.5-flash-lite
+# AGENT_MODEL=google_genai:gemini-flash-latest
 # GOOGLE_API_KEY=...
 #
 # AGENT_MODEL=anthropic:claude-haiku-4-5
@@ -310,6 +310,7 @@ The spend limit is not busywork. You are about to write loops that call a paid A
 | `AuthenticationError` / 401 | Key not visible to the process | `load_dotenv()` before importing, or `export` it |
 | Key works in shell, not in script | `.env` never loaded | Add `python-dotenv` and call `load_dotenv()` first |
 | `ModuleNotFoundError: langchain_<provider>` | Provider extra not installed | `pip install "langchain[<provider>]"` |
+| `404 NOT_FOUND ... no longer available to new users` | Model name retired for new accounts, even though it still appears in the models list | Use a `-latest` alias, or list the models your key can reach |
 | Answer looks right but ignores your tool | Tool never called | Change its return to something absurd; see §4 |
 | Runs forever / huge bill | Loop with no cap | Set spend limit; cap iterations (Module 3) |
 | Tutorial online uses `LLMChain` | Written pre-v1 | See Appendix A in the [syllabus](./index.md) |
