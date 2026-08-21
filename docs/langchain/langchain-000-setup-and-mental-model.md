@@ -37,7 +37,7 @@ Three things, and it helps to keep them separate:
 import anthropic
 client = anthropic.Anthropic()
 resp = client.messages.create(
-    model="claude-opus-5",
+    model="claude-haiku-4-5",
     max_tokens=1024,
     messages=[{"role": "user", "content": "Summarise this."}],
 )
@@ -84,7 +84,11 @@ Four habits, in order of importance:
 ```bash
 mkdir -p ~/dev/langchain-learning && cd ~/dev/langchain-learning
 python3 -m venv .venv
-.venv/bin/pip install -U langchain langchain-anthropic python-dotenv
+.venv/bin/pip install -U langchain python-dotenv
+
+# then ONE provider package, matching your choice:
+.venv/bin/pip install -U langchain-anthropic     # Claude
+# .venv/bin/pip install -U langchain-ollama      # Ollama
 ```
 
 Check what you got — if `langchain` is below 1.0, everything in this path will fail:
@@ -102,15 +106,108 @@ langchain-core           1.5.3
 langgraph                1.2.10
 ```
 
-### 3.2 Keys
+### 3.2 Keys and environment
 
-Create `.env` in the project root:
+Create `.env` in your project root. Fill in the setup you chose in
+[Choosing your model](./model-setup.md); leave the rest commented out — you
+will uncomment lines as later modules need them.
 
-```
+```bash
+# =====================================================================
+#  .env  —  NEVER commit this file
+# =====================================================================
+
+# ---------------------------------------------------------------------
+#  1. MODEL  (Module 0)  —  pick ONE, comment out the other
+# ---------------------------------------------------------------------
+
+# --- Claude (hosted) -------------------------------------------------
 ANTHROPIC_API_KEY=sk-ant-...
+AGENT_MODEL=anthropic:claude-haiku-4-5
+
+# Haiku 4.5 is the cheapest current model ($1 / $5 per million tokens)
+# and is plenty for Modules 0-9. Switch to a stronger model for
+# Modules 10-12, where reasoning quality is the actual subject:
+# AGENT_MODEL=anthropic:claude-sonnet-5
+
+# --- Ollama (local, free) --------------------------------------------
+# No key needed. Requires `ollama serve` running.
+# AGENT_MODEL=ollama:llama3.1:8b
+# OLLAMA_BASE_URL=http://localhost:11434
+
+# ---------------------------------------------------------------------
+#  1b. OTHER PROVIDERS  (optional, and NOT verified by this tutorial)
+# ---------------------------------------------------------------------
+# LangChain speaks to 23 providers through the same interface. Only the
+# two above are tested here - anything below works, but you are on your
+# own for differences. Format is always  provider:model-name
+#
+#   provider string    pip package                    example model
+#   -----------------  ----------------------------   ---------------------
+#   openai             langchain-openai               openai:gpt-5.5
+#   google_genai       langchain-google-genai         google_genai:gemini-2.5-flash
+#   groq               langchain-groq                 groq:llama-3.3-70b-versatile
+#   mistralai          langchain-mistralai            mistralai:mistral-large-latest
+#   deepseek           langchain-deepseek             deepseek:deepseek-chat
+#   openrouter         langchain-openrouter           openrouter:anthropic/claude-sonnet-5
+#   together           langchain-together             together:...
+#   fireworks          langchain-fireworks            fireworks:...
+#   cohere             langchain-cohere               cohere:...
+#   xai                langchain-xai                  xai:...
+#   perplexity         langchain-perplexity           perplexity:...
+#   bedrock_converse   langchain-aws                  bedrock_converse:...
+#   google_vertexai    langchain-google-vertexai      google_vertexai:...
+#
+# Each provider reads its own API key variable - most follow the
+# PROVIDER_API_KEY convention (OPENAI_API_KEY, GROQ_API_KEY, ...), but
+# check that provider's integration page rather than guessing:
+# https://docs.langchain.com/oss/python/integrations/providers
+#
+# Example:
+# OPENAI_API_KEY=sk-...
+# AGENT_MODEL=openai:gpt-5.5
+
+# ---------------------------------------------------------------------
+#  2. GUARDRAILS  (Module 3)  —  set these before your first loop
+# ---------------------------------------------------------------------
+AGENT_MAX_MODEL_CALLS=6
+AGENT_RECURSION_LIMIT=25
+
+# ---------------------------------------------------------------------
+#  3. TRACING  (Module 3, optional but recommended)
+# ---------------------------------------------------------------------
+# LANGSMITH_TRACING=true
+# LANGSMITH_API_KEY=lsv2_...
+# LANGSMITH_PROJECT=yg-learning
+
+# ---------------------------------------------------------------------
+#  4. RETRIEVAL  (Module 6)
+# ---------------------------------------------------------------------
+# Embeddings run locally on CPU. No key, no cost, works offline.
+# EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
+# CHUNK_SIZE=1000
+# CHUNK_OVERLAP=200
+# RETRIEVAL_K=4
+
+# ---------------------------------------------------------------------
+#  5. PERSISTENCE  (Module 5)
+# ---------------------------------------------------------------------
+# CHECKPOINT_DB=checkpoints.db
 ```
 
-And `.gitignore`, **before** you `git init`:
+Then load it at the top of every script, **before** importing anything from
+LangChain:
+
+```python
+from dotenv import load_dotenv
+load_dotenv()
+```
+
+Order matters: `load_dotenv()` sets the variables in the process, and some
+libraries read them at import time. Calling it after your imports is the
+single most common "my key works in the shell but not in the script" bug.
+
+Now `.gitignore`, **before** you `git init`:
 
 ```
 .env
@@ -118,7 +215,12 @@ And `.gitignore`, **before** you `git init`:
 __pycache__/
 ```
 
-A key committed to a repo is a key you must rotate. Order matters here.
+A key committed to a repository is a key you must rotate — and it stays in the
+git history even after you delete the file. Write `.gitignore` first.
+
+> The same variables, in the same shape, are in
+> `templates/agent-app/.env.example` in this repository. From Module 2 onward
+> you will clone that template rather than writing this by hand.
 
 ### 3.3 Your first agent
 
@@ -134,7 +236,7 @@ def get_weather(city: str) -> str:
     return f"It's 32°C and humid in {city}."
 
 agent = create_agent(
-    model="anthropic:claude-opus-5",
+    model="anthropic:claude-haiku-4-5",   # matches AGENT_MODEL in your .env
     tools=[get_weather],
     system_prompt="You are a helpful assistant. Be concise.",
 )
@@ -149,7 +251,7 @@ Nine lines of substance. Read them now, and read them again after Module 3 — e
 
 Things worth noticing already:
 
-- `"anthropic:claude-opus-5"` — the `provider:model` string. Change `anthropic` to `openai` and, with that package installed, the rest of the file is untouched.
+- `"anthropic:claude-haiku-4-5"` — the `provider:model` string. Change `anthropic` to `openai` and, with that package installed, the rest of the file is untouched.
 - `get_weather` is a plain Python function. LangChain reads its **signature and docstring** to tell the model what it does. Module 2 is entirely about why that docstring matters more than you would guess.
 - You never wrote the loop. `create_agent` runs it: the model asked for `get_weather`, LangChain called it, handed back the result, and the model wrote the answer.
 - `result["messages"]` is the whole conversation, not just the reply. `[-1]` is the final message.
@@ -217,7 +319,7 @@ The spend limit is not busywork. You are about to write loops that call a paid A
 2. **You need to summarise a document with one model call. LangChain or the SDK?**
    The SDK. No agent loop, no retrieval, no orchestration — the framework earns nothing here.
 
-3. **What does `"anthropic:claude-opus-5"` mean, and why is it a string rather than an import?**
+3. **What does `"anthropic:claude-haiku-4-5"` mean, and why is it a string rather than an import?**
    `provider:model`. As a string it is configuration, so the provider can change without touching code.
 
 4. **How does the model know what `get_weather` does?**
