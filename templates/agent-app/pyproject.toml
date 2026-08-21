@@ -9,9 +9,9 @@ dependencies = [
     "python-dotenv>=1.0",
 ]
 
+# Provider packages are installed separately as langchain extras,
+# e.g. pip install "langchain[openai]".  See docs model-setup.md
 [project.optional-dependencies]
-claude = ["langchain-anthropic>=1.5"]
-ollama = ["langchain-ollama>=1.0"]
 rag    = ["langchain-huggingface", "sentence-transformers", "langchain-text-splitters", "numpy"]
 sqlite = ["langgraph-checkpoint-sqlite"]
 dev    = ["pytest>=8.0", "ruff"]

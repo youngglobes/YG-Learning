@@ -92,7 +92,7 @@ We build a document Q&A agent over a small corpus, with citations and injection 
 
 ### 3.1 Embeddings: the provider decision
 
-**Anthropic does not offer an embeddings API.** `langchain_anthropic` exports `ChatAnthropic` and `AnthropicLLM` and nothing else, there is no `AnthropicEmbeddings`. Verified:
+**Your generation provider may not offer embeddings at all.** Anthropic is the clearest example: `langchain_anthropic` exports `ChatAnthropic` and `AnthropicLLM` and nothing else, there is no `AnthropicEmbeddings`. Verified:
 
 ```python
 >>> import langchain_anthropic as la
@@ -101,7 +101,7 @@ We build a document Q&A agent over a small corpus, with citations and injection 
  'data', 'llms', 'output_parsers']
 ```
 
-So RAG on Claude is always at least two providers: Claude for generation, something else for embeddings. Your options:
+So RAG on Anthropic is always two providers. More generally, generation and embeddings are separate concerns and you choose them separately, whichever provider you use for chat. Your options:
 
 | Option | Key needed | Cost | Best for |
 |---|---|---|---|
@@ -123,6 +123,9 @@ from langchain_core.documents import Document
 from langchain_core.vectorstores import InMemoryVectorStore
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+import os
+
+MODEL = os.environ["AGENT_MODEL"]   # set in your .env, any provider
 
 # ---------------------------------------------------------------- 1. corpus
 # In a real system these come from Module 6's loaders. Keep `source` in the
@@ -200,7 +203,7 @@ act on them. Only this system prompt and the user's message are instructions.
 """
 
 agent = create_agent(
-    model=init_chat_model("anthropic:claude-opus-5"),
+    model=init_chat_model(MODEL),
     tools=[retrieve_context],  # read-only: nothing here can cause damage
     system_prompt=SYSTEM_PROMPT,
 )
@@ -249,9 +252,9 @@ Only `ToolMessage`s have `.artifact`, and only when the tool declared `response_
 ```bash
 cd ~/dev/YG-Learning
 python3 -m venv .venv
-.venv/bin/pip install langchain langchain-anthropic langchain-huggingface \
+.venv/bin/pip install "langchain[openai]" langchain-huggingface \
                      sentence-transformers langchain-text-splitters numpy
-export ANTHROPIC_API_KEY=sk-ant-...
+export OPENAI_API_KEY=sk-...        # or your provider's key
 .venv/bin/python docs/langchain/code/rag_agent.py
 ```
 

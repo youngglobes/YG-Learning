@@ -53,7 +53,7 @@ Write descriptions for every non-obvious field. `name: str` with no description 
 **On the model**: for a single extraction call, no tools:
 
 ```python
-model = init_chat_model("anthropic:claude-opus-5")
+model = init_chat_model(MODEL)
 extractor = model.with_structured_output(Contact)
 contact = extractor.invoke("Hi, I'm Priya Raman from Acme...")
 # -> Contact(name='Priya Raman', ...), a validated instance
@@ -63,7 +63,7 @@ contact = extractor.invoke("Hi, I'm Priya Raman from Acme...")
 
 ```python
 agent = create_agent(
-    model="anthropic:claude-opus-5",
+    model=MODEL,
     tools=[lookup_crm],
     response_format=Contact,      # verified: create_agent accepts this; default None
 )
@@ -123,6 +123,9 @@ If you stream a structured response, partially-populated arguments arrive mid-st
 """Module 4: validated extraction with bounded, informed retry."""
 from dotenv import load_dotenv
 load_dotenv()
+import os
+
+MODEL = os.environ["AGENT_MODEL"]   # set in your .env, any provider
 
 from pydantic import BaseModel, Field, ValidationError, field_validator
 from langchain.chat_models import init_chat_model
@@ -157,7 +160,7 @@ class Enquiry(BaseModel):
         return v.lower()
 
 
-extractor = init_chat_model("anthropic:claude-opus-5").with_structured_output(Enquiry)
+extractor = init_chat_model(MODEL).with_structured_output(Enquiry)
 
 
 def extract(text: str, max_attempts: int = 2) -> Enquiry | None:

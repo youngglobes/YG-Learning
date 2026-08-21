@@ -11,7 +11,7 @@ Clone it, rename it, build in it. It answers the question no tutorial answers:
 ```bash
 cp -r templates/agent-app ~/dev/my-project && cd ~/dev/my-project
 cp .env.example .env          # then edit it
-make install-ollama           # or: make install-claude
+make install PROVIDER=openai  # or google-genai, anthropic, ollama, ...
 make test                     # passes with no API key
 make run
 ```
@@ -37,7 +37,7 @@ corpus/         documents for RAG projects (gitignored)
 ### Why it is split this way
 
 **`config.py` is the only file that knows which model you use.** Switching
-between Claude and Ollama is an env var, never a code change. That is the
+provider is an env var, never a code change. That is the
 provider-neutrality from Module 1, made real.
 
 **`agent.py` accepts an injected model.** That is what makes the tests
@@ -113,9 +113,7 @@ first, there are about twenty.
 
 | Command | Does |
 |---|---|
-| `make install` | venv + dev + rag deps |
-| `make install-claude` | the above + `langchain-anthropic` |
-| `make install-ollama` | the above + `langchain-ollama` |
+| `make install PROVIDER=x` | venv, dev and rag deps, plus `langchain[x]` |
 | `make test` | pytest, no key needed |
 | `make lint` | ruff |
 | `make run` | one sample question |

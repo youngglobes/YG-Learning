@@ -109,6 +109,9 @@ Tracing (Module 3) plus operational metrics. Alert on: error rate, p95 latency, 
 import asyncio
 from dotenv import load_dotenv
 load_dotenv()
+import os
+
+MODEL = os.environ["AGENT_MODEL"]   # set in your .env, any provider
 
 from langchain.agents import create_agent
 from langchain.agents.middleware import (
@@ -117,7 +120,8 @@ from langchain.agents.middleware import (
 )
 from langgraph.checkpoint.memory import InMemorySaver
 
-MODEL = "anthropic:claude-opus-5"
+MODEL = os.environ["AGENT_MODEL"]          # your provider, from .env
+FALLBACK = os.environ.get("AGENT_FALLBACK_MODEL", MODEL)
 
 agent = create_agent(
     model=MODEL,
@@ -129,7 +133,7 @@ agent = create_agent(
         SummarizationMiddleware(model=MODEL, trigger={"tokens": 8000},
                                 keep={"messages": 8}),
         ToolRetryMiddleware(max_retries=2, jitter=True),
-        ModelFallbackMiddleware("anthropic:claude-sonnet-5"),
+        ModelFallbackMiddleware(FALLBACK),
         ModelCallLimitMiddleware(run_limit=10),             # innermost backstop
     ],
 )

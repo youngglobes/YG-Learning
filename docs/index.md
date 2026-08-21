@@ -11,7 +11,7 @@ tutorials online still teach.
 <div class="grid cards" markdown>
 
 - **[Choosing your model](langchain/model-setup.md)**
-  Claude or Ollama. Your choice, and nobody is required to buy anything.
+  Any provider LangChain supports, or a local model. Nobody is required to buy anything.
 
 - **[8-week learning plan](langchain/learning-plan.md)**
   What to read and what to build each week.

@@ -52,8 +52,11 @@ The clean way to express this in LangChain is to make **each specialist a tool**
 ```python
 from langchain.agents import create_agent
 from langchain.tools import tool
+import os
 
-researcher = create_agent(model="anthropic:claude-opus-5", tools=[search],
+MODEL = os.environ["AGENT_MODEL"]   # set in your .env, any provider
+
+researcher = create_agent(model=MODEL, tools=[search],
                           system_prompt="Research thoroughly. Report findings with sources.")
 
 @tool(parse_docstring=True)
@@ -113,6 +116,9 @@ A support triage system: classify, route to a specialist, escalate when unsure.
 """Module 11: supervisor with specialists as tools, and a cost baseline."""
 from dotenv import load_dotenv
 load_dotenv()
+import os
+
+MODEL = os.environ["AGENT_MODEL"]   # set in your .env, any provider
 
 from langchain.agents import create_agent
 from langchain.agents.middleware import ModelCallLimitMiddleware
@@ -120,7 +126,7 @@ from langchain.tools import tool
 
 # ---- specialists: narrow prompts, narrow tools --------------------------
 billing = create_agent(
-    model="anthropic:claude-opus-5",
+    model=MODEL,
     tools=[],
     system_prompt=("You handle billing questions: invoices, refunds, payment "
                    "failures. Answer only from what you are told. If the task "
@@ -129,7 +135,7 @@ billing = create_agent(
 )
 
 technical = create_agent(
-    model="anthropic:claude-opus-5",
+    model=MODEL,
     tools=[],
     system_prompt=("You handle technical support: errors, integrations, "
                    "configuration. Give concrete steps. If you cannot solve "
@@ -173,7 +179,7 @@ def ask_technical(task: str) -> str:
 
 
 supervisor = create_agent(
-    model="anthropic:claude-opus-5",
+    model=MODEL,
     tools=[ask_billing, ask_technical],
     system_prompt=(
         "You triage customer support tickets.\n\n"

@@ -41,7 +41,7 @@ def lookup_order(order_id: str) -> str:
 
 
 agent = create_agent(
-    model="anthropic:claude-opus-5",
+    model=MODEL,
     tools=[lookup_order],
     system_prompt=(
         "You are a customer service assistant. Use lookup_order to answer "

@@ -109,13 +109,16 @@ History grows every turn, and Module 1 §2.4 already showed you it is re-sent ev
 
 ```python
 from langchain.agents.middleware import SummarizationMiddleware
+import os
+
+MODEL = os.environ["AGENT_MODEL"]   # set in your .env, any provider
 
 agent = create_agent(
-    model="anthropic:claude-opus-5",
+    model=MODEL,
     tools=[...],
     checkpointer=InMemorySaver(),
     middleware=[SummarizationMiddleware(
-        model="anthropic:claude-opus-5",
+        model=MODEL,
         trigger={"tokens": 4000},   # compact once history passes this
         keep={"messages": 6},       # keep the most recent turns verbatim
     )],
@@ -140,13 +143,16 @@ Before enabling persistence on anything real, answer three questions: how long d
 """Module 5: a multi-turn assistant with per-user threads."""
 from dotenv import load_dotenv
 load_dotenv()
+import os
+
+MODEL = os.environ["AGENT_MODEL"]   # set in your .env, any provider
 
 from langchain.agents import create_agent
 from langchain.agents.middleware import ModelCallLimitMiddleware
 from langgraph.checkpoint.memory import InMemorySaver
 
 agent = create_agent(
-    model="anthropic:claude-opus-5",
+    model=MODEL,
     tools=[],
     system_prompt="You are a concise assistant with a good memory.",
     checkpointer=InMemorySaver(),

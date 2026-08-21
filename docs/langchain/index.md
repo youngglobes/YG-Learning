@@ -4,7 +4,7 @@
 **Prerequisite:** AI Foundations (Python, LLM fundamentals, prompt engineering, structured output)
 **Framework version:** LangChain v1.x (Python)
 **Estimated duration:** 8-10 weeks part-time, ~6 weeks full-time
-**Before you start:** [Choosing your model](./model-setup.md). Claude or Ollama, your choice
+**Before you start:** [Choosing your model](./model-setup.md). Any provider works; a local model is free
 **Working through it?** [8-week learning plan](./learning-plan.md), what to read and build each week
 **Building something?** [Agent app template](https://github.com/youngglobes/YG-Learning/tree/main/templates/agent-app), clone this for every project
 **Reviewing this material?** [Verification checklist](./VERIFICATION.md), behavioural claims still needing confirmation against a live model
@@ -74,7 +74,7 @@ Module *N* lives in `langchain-00N-*.md`. Written modules are linked.
 **Walkthrough.** The one-screen agent:
 
 ```python
-# pip install -qU langchain "langchain[anthropic]"
+# pip install -qU "langchain[openai]"   # or any other provider extra
 from langchain.agents import create_agent
 
 def get_weather(city: str) -> str:
@@ -82,7 +82,7 @@ def get_weather(city: str) -> str:
     return f"It's always sunny in {city}!"
 
 agent = create_agent(
-    model="anthropic:claude-opus-5",
+    model=MODEL,   # from your .env, any provider
     tools=[get_weather],
     system_prompt="You are a helpful assistant",
 )
@@ -109,7 +109,7 @@ Nine lines. Read them, then read them again after Module 3: every one of them wi
 **Why this matters.** Everything downstream is a message list. Interns who skip this spend Module 7 confused about why their retrieved context "disappeared."
 
 **Concepts**
-- `init_chat_model` and provider strings (`"anthropic:claude-opus-5"`, `"openai:gpt-5.5"`, `"ollama:..."`)
+- `init_chat_model` and provider strings (`"openai:gpt-5.5"`, `"google_genai:..."`, `"anthropic:..."`, `"ollama:..."`)
 - Message types: system, user, assistant, tool
 - **Content blocks**: the v1 representation. `content_blocks`, not `content`, is what you read
 - Multimodal input (images, PDFs)
@@ -417,7 +417,7 @@ Recommendation: single provider for Modules 0-8, provider-neutral from Module 9 
 
 ### Embeddings, not optional, and not Claude
 
-**Anthropic ships no embeddings API.** Verified against `langchain-anthropic` 1.5.4:
+**Not every provider offers embeddings.** Anthropic, for example, ships none. Verified against `langchain-anthropic` 1.5.4:
 
 ```python
 >>> import langchain_anthropic as la

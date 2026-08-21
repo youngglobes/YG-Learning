@@ -131,6 +131,9 @@ Three rules that matter more as the toolset grows:
 """Module 2: a small, well-specified toolset."""
 from dotenv import load_dotenv
 load_dotenv()
+import os
+
+MODEL = os.environ["AGENT_MODEL"]   # set in your .env, any provider
 
 from typing import Literal
 from langchain.agents import create_agent
@@ -181,7 +184,7 @@ def convert_currency(amount: float, frm: str, to: str) -> str:
 
 
 agent = create_agent(
-    model="anthropic:claude-opus-5",
+    model=MODEL,
     tools=[get_weather, convert_currency],
     system_prompt="You are a concise assistant.",
 )

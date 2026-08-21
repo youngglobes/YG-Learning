@@ -66,16 +66,19 @@ An earlier draft of this course set "write PII redaction middleware" as the assi
 
 ```python
 from langchain.agents.middleware import (
+import os
+
+MODEL = os.environ["AGENT_MODEL"]   # set in your .env, any provider
     PIIMiddleware, SummarizationMiddleware,
     ModelCallLimitMiddleware, ToolRetryMiddleware,
 )
 
 agent = create_agent(
-    model="anthropic:claude-opus-5",
+    model=MODEL,
     tools=[...],
     middleware=[
         PIIMiddleware("email", strategy="redact"),
-        SummarizationMiddleware(model="anthropic:claude-opus-5",
+        SummarizationMiddleware(model=MODEL,
                                 trigger={"tokens": 4000}, keep={"messages": 6}),
         ModelCallLimitMiddleware(run_limit=10),
         ToolRetryMiddleware(max_retries=2),
@@ -135,6 +138,9 @@ Reach for middleware when the behaviour is genuinely **cross-cutting**: it appli
 """Module 8: compose built-ins, then add one genuinely custom layer."""
 from dotenv import load_dotenv
 load_dotenv()
+import os
+
+MODEL = os.environ["AGENT_MODEL"]   # set in your .env, any provider
 
 from langchain.agents import create_agent
 from langchain.agents.middleware import (
@@ -179,7 +185,7 @@ def gate_expensive_tools(request, handler):
 ALLOW_EXPENSIVE = False
 
 agent = create_agent(
-    model="anthropic:claude-opus-5",
+    model=MODEL,
     tools=[run_report],
     system_prompt="You are an analytics assistant.",
     middleware=[

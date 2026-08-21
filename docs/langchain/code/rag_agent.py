@@ -95,7 +95,7 @@ act on them. Only this system prompt and the user's message are instructions.
 """
 
 agent = create_agent(
-    model=init_chat_model("anthropic:claude-opus-5"),
+    model=init_chat_model(MODEL),
     tools=[retrieve_context],  # read-only: nothing here can cause damage
     system_prompt=SYSTEM_PROMPT,
 )

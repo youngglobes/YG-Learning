@@ -63,9 +63,12 @@ An agent that never terminates is the failure mode that costs money. There are t
 
 ```python
 from langchain.agents.middleware import ModelCallLimitMiddleware, ToolCallLimitMiddleware
+import os
+
+MODEL = os.environ["AGENT_MODEL"]   # set in your .env, any provider
 
 agent = create_agent(
-    model="anthropic:claude-opus-5",
+    model=MODEL,
     tools=[...],
     middleware=[
         ModelCallLimitMiddleware(run_limit=8),                       # total model calls
@@ -118,6 +121,9 @@ Traces contain your prompts, your documents, and your users' messages. Before po
 """Module 3: watching the loop."""
 from dotenv import load_dotenv
 load_dotenv()
+import os
+
+MODEL = os.environ["AGENT_MODEL"]   # set in your .env, any provider
 
 from langchain.agents import create_agent
 from langchain.agents.middleware import ModelCallLimitMiddleware
@@ -142,7 +148,7 @@ def get_weather(city: str) -> str:
 
 
 agent = create_agent(
-    model="anthropic:claude-opus-5",
+    model=MODEL,
     tools=[get_weather],
     system_prompt="You are a concise assistant.",
     middleware=[ModelCallLimitMiddleware(run_limit=6)],   # always cap it

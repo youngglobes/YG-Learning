@@ -23,10 +23,13 @@ One function, any provider:
 
 ```python
 from langchain.chat_models import init_chat_model
+import os
 
-model = init_chat_model("anthropic:claude-opus-5")
-model = init_chat_model("openai:gpt-5.5")
-model = init_chat_model("ollama:llama3.2")          # local, no key
+MODEL = os.environ["AGENT_MODEL"]   # set in your .env, any provider
+
+model = init_chat_model(MODEL)
+model = init_chat_model(MODEL)
+model = init_chat_model(MODEL)          # local, no key
 ```
 
 The `provider:model` string keeps provider choice as configuration rather than code. Its signature is `(model, model_provider, configurable_fields, config_prefix, **kwargs)`, `kwargs` is where provider-specific options like `max_tokens` go.
@@ -81,11 +84,14 @@ Two consequences worth internalising now:
 """Module 1: anatomy of a message list."""
 from dotenv import load_dotenv
 load_dotenv()
+import os
+
+MODEL = os.environ["AGENT_MODEL"]   # set in your .env, any provider
 
 from langchain.chat_models import init_chat_model
 from langchain.messages import HumanMessage, SystemMessage
 
-model = init_chat_model("anthropic:claude-opus-5")
+model = init_chat_model(MODEL)
 
 messages = [
     SystemMessage("You are a terse assistant. One sentence maximum."),

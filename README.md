@@ -14,7 +14,7 @@ tutorials online still teach.
 
 | Start here | |
 |---|---|
-| [Choosing your model](./docs/langchain/model-setup.md) | Claude or Ollama, your choice, both free to start |
+| [Choosing your model](./docs/langchain/model-setup.md) | Any provider LangChain supports, or run one locally for free |
 | [8-week learning plan](./docs/langchain/learning-plan.md) | What to read and build each week |
 | [Syllabus](./docs/langchain/index.md) | All 13 modules |
 | [Agent app template](./templates/agent-app/README.md) | Clone this for every project |
@@ -39,8 +39,8 @@ cd ~/dev/my-project && make install-ollama && make test
 ```
 
 Nothing is hosted. You run everything on your own machine, with your own
-model. **Nobody is required to buy anything**: Ollama completes every module
-at no cost.
+model. **Nobody is required to buy anything.** Any provider works, and a
+local model via Ollama completes every module at no cost.
 
 ---
 
