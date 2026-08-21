@@ -1,10 +1,10 @@
 """Central configuration. The ONE place the model is chosen.
 
-Both supported setups are read from the environment, so switching between
-Claude and Ollama never touches application code:
+The model is read from the environment, so switching provider never touches
+application code:
 
-    AGENT_MODEL=anthropic:claude-haiku-4-5     # Claude
-    AGENT_MODEL=ollama:llama3.1:8b             # Ollama
+    AGENT_MODEL=openai:gpt-5.5                 # or google_genai:..., anthropic:...,
+    AGENT_MODEL=ollama:llama3.1:8b             # groq:..., mistralai:..., or any of 23
 """
 
 from __future__ import annotations
@@ -22,6 +22,7 @@ class Settings:
     """Application settings, all overridable by environment variable."""
 
     # --- model ----------------------------------------------------------
+    # Local default so the template runs with no key. Override in .env.
     model: str = field(default_factory=lambda: os.getenv("AGENT_MODEL", "ollama:llama3.1:8b"))
 
     # --- guardrails (Module 3) ------------------------------------------

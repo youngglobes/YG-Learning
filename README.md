@@ -9,12 +9,12 @@ Internal learning resources for YoungGlobes engineers.
 ### [LangChain Learning Path](./docs/langchain/index.md)
 
 Thirteen modules taking an engineer from zero to building production agent
-applications. Built against **LangChain v1** — not the pre-v1 framework most
+applications. Built against **LangChain v1**, not the pre-v1 framework most
 tutorials online still teach.
 
 | Start here | |
 |---|---|
-| [Choosing your model](./docs/langchain/model-setup.md) | Claude or Ollama — your choice, both free to start |
+| [Choosing your model](./docs/langchain/model-setup.md) | Any provider LangChain supports, or run one locally for free |
 | [8-week learning plan](./docs/langchain/learning-plan.md) | What to read and build each week |
 | [Syllabus](./docs/langchain/index.md) | All 13 modules |
 | [Agent app template](./templates/agent-app/README.md) | Clone this for every project |
@@ -39,8 +39,8 @@ cd ~/dev/my-project && make install-ollama && make test
 ```
 
 Nothing is hosted. You run everything on your own machine, with your own
-model. **Nobody is required to buy anything** — Ollama completes every module
-at no cost.
+model. **Nobody is required to buy anything.** Any provider works, and a
+local model via Ollama completes every module at no cost.
 
 ---
 
@@ -53,7 +53,7 @@ replacements, so you can date a tutorial in ten seconds instead of debugging
 for an afternoon.
 
 **Every claim was checked against the installed packages.** Writing it turned
-up several things the documentation and the plan got wrong — `@tool` silently
+up several things the documentation and the plan got wrong, `@tool` silently
 discarding parameter descriptions without `parse_docstring=True`, Anthropic
 shipping no embeddings API at all, `SqliteSaver` not being bundled,
 `similarity_search_with_relevance_scores` raising `NotImplementedError` on the
@@ -72,13 +72,14 @@ your own system. It is not an advanced footnote.
 ## Status
 
 The material is complete and the code samples are verified against the
-installed packages. **Behavioural claims — does the agent decline, cite,
-resist injection — have not yet been confirmed against a live model.** Those
-are tracked in the [verification checklist](./docs/langchain/VERIFICATION.md)
-and are being worked through now.
+installed packages. **Behavioural claims have not yet been confirmed against a
+live model.** Whether the agent actually declines, cites its sources, and
+resists injection is still unverified. Those claims are tracked in the
+[verification checklist](./docs/langchain/VERIFICATION.md) and are being
+worked through now.
 
 Expect corrections. If you hit something wrong, that is a finding worth more
-than a new module — record it and raise it.
+than a new module, record it and raise it.
 
 ---
 
@@ -99,7 +100,7 @@ commercially, as long as you credit YoungGlobes. You may use the code for
 anything, with no obligation beyond keeping the copyright notice.
 
 > Previously GPL-2.0. That is a software copyleft licence and a poor fit for
-> documentation — it would have required anyone reusing this material to
+> documentation, it would have required anyone reusing this material to
 > license their derivative work under GPL-2.0 as well. Changed before any
 > outside contributions made it difficult to change.
 
@@ -111,7 +112,7 @@ Keep a `STUCK.md` as you learn: what you expected, what happened, what fixed
 it. Bring it to your check-ins. Being early through this material makes your
 confusion the most useful data we have.
 
-Modules follow a fixed nine-section template — see Appendix B of the
+Modules follow a fixed nine-section template, see Appendix B of the
 [syllabus](./docs/langchain/index.md). Keep it; the consistency is what makes
 thirteen modules navigable.
 

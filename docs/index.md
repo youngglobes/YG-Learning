@@ -5,13 +5,13 @@ Internal learning resources for YoungGlobes engineers.
 ## LangChain Learning Path
 
 Thirteen modules taking an engineer from zero to building production agent
-applications, built against **LangChain v1** — not the pre-v1 framework most
+applications, built against **LangChain v1**, not the pre-v1 framework most
 tutorials online still teach.
 
 <div class="grid cards" markdown>
 
 - **[Choosing your model](langchain/model-setup.md)**
-  Claude or Ollama. Your choice, and nobody is required to buy anything.
+  Any provider LangChain supports, or a local model. Nobody is required to buy anything.
 
 - **[8-week learning plan](langchain/learning-plan.md)**
   What to read and what to build each week.
@@ -26,7 +26,7 @@ tutorials online still teach.
 
 ## Building something?
 
-Clone the agent app template — it is in the repository at
+Clone the agent app template, it is in the repository at
 `templates/agent-app/`, and its tests run with no API key.
 
 ```bash

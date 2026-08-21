@@ -1,15 +1,15 @@
-# Module 9 — Evaluation
+# Module 9: Evaluation
 
 **Phase:** Orchestration & Production
-**Prerequisites:** Modules 0–8, and the eval question set from Module 6
+**Prerequisites:** Modules 0-8, and the eval question set from Module 6
 **Verified against:** `langsmith` 0.10.17, `langchain` 1.3.14, Python 3.12
-**Estimated time:** 6–8 hours
+**Estimated time:** 6-8 hours
 
 ---
 
 ## 1. Why this matters
 
-For eight modules you have changed prompts, swapped chunk sizes, and reordered middleware — and judged the results by reading a couple of outputs and forming an impression.
+For eight modules you have changed prompts, swapped chunk sizes, and reordered middleware, and judged the results by reading a couple of outputs and forming an impression.
 
 That does not scale past a demo, for a specific reason: **LLM changes trade off.** A prompt edit that fixes the case in front of you routinely breaks two you are not looking at. Without measurement you cannot see the trade, so you ship it, and quality drifts downward one confident improvement at a time.
 
@@ -23,15 +23,15 @@ This is the module that separates an engineer from someone who assembles demos. 
 
 Three parts:
 
-1. **A dataset** — inputs, and what a good output looks like
-2. **Evaluators** — functions scoring an output against the reference
-3. **An experiment** — running your system over the dataset and recording scores
+1. **A dataset**: inputs, and what a good output looks like
+2. **Evaluators**: functions scoring an output against the reference
+3. **An experiment**: running your system over the dataset and recording scores
 
 Once that exists, "did this change help?" becomes a number instead of an argument.
 
 ### 2.2 Build the dataset from real traces
 
-The temptation is to invent test questions. Invented questions are too clean — they use your vocabulary, ask one thing at a time, and are spelled correctly. Real users are not like that.
+The temptation is to invent test questions. Invented questions are too clean, they use your vocabulary, ask one thing at a time, and are spelled correctly. Real users are not like that.
 
 Your traces from Module 3 onward are a dataset waiting to be harvested. Pull real inputs, especially the ones that went badly.
 
@@ -44,7 +44,7 @@ Rules of thumb:
 
 ### 2.3 Three kinds of evaluator, in order of preference
 
-**Deterministic** — cheap, fast, perfectly reliable. Use wherever possible:
+**Deterministic**: cheap, fast, perfectly reliable. Use wherever possible:
 
 ```python
 def has_citation(outputs: dict) -> bool:
@@ -52,7 +52,7 @@ def has_citation(outputs: dict) -> bool:
     return ".md" in outputs["answer"]
 ```
 
-**Heuristic** — string or structural checks with a defensible rule:
+**Heuristic**: string or structural checks with a defensible rule:
 
 ```python
 def retrieved_correct_doc(outputs: dict, reference_outputs: dict) -> bool:
@@ -60,7 +60,7 @@ def retrieved_correct_doc(outputs: dict, reference_outputs: dict) -> bool:
     return reference_outputs["source"] in outputs["sources"]
 ```
 
-**LLM-as-judge** — a model scores the output. Necessary for qualities you cannot express as a rule, such as "is this answer faithful to the retrieved context":
+**LLM-as-judge**: a model scores the output. Necessary for qualities you cannot express as a rule, such as "is this answer faithful to the retrieved context":
 
 ```python
 from langsmith import Client
@@ -73,7 +73,7 @@ def faithful(outputs: dict, reference_outputs: dict) -> bool:
     return verdict.text.strip().upper().startswith("YES")
 ```
 
-**Where LLM-as-judge is and is not trustworthy.** It is reasonable for faithfulness, relevance, tone, and gross correctness. It is unreliable for anything numeric, for fine distinctions, and — critically — for **grading its own model's output**, where it tends to be generous. Use a different model as judge where you can, and spot-check the judge against human labels before trusting it. A judge you have never audited is a metric you have never validated.
+**Where LLM-as-judge is and is not trustworthy.** It is reasonable for faithfulness, relevance, tone, and gross correctness. It is unreliable for anything numeric, for fine distinctions, and, critically, for **grading its own model's output**, where it tends to be generous. Use a different model as judge where you can, and spot-check the judge against human labels before trusting it. A judge you have never audited is a metric you have never validated.
 
 ### 2.4 Running an experiment
 
@@ -110,7 +110,7 @@ An eval you run manually is an eval you stop running. Wire it to the pipeline:
   run: python evals/run.py --fail-under 0.85
 ```
 
-Two warnings from practice. **Scores are noisy** — models are non-deterministic, so a threshold set at your best-ever score will fail on green builds. Set it below your stable floor. And **cost is real** — a 100-example suite with an LLM judge is 200+ model calls. Run the full suite nightly and a smaller smoke subset per commit.
+Two warnings from practice. **Scores are noisy**: models are non-deterministic, so a threshold set at your best-ever score will fail on green builds. Set it below your stable floor. And **cost is real**: a 100-example suite with an LLM judge is 200+ model calls. Run the full suite nightly and a smaller smoke subset per commit.
 
 ### 2.6 Reading results honestly
 
@@ -125,7 +125,7 @@ The output is a table of scores per example. The instinct is to read the average
 ## 3. Walkthrough
 
 ```python
-"""Module 9 — evaluate the Module 7 RAG agent."""
+"""Module 9: evaluate the Module 7 RAG agent."""
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -203,7 +203,7 @@ results = evaluate(
 print(results)
 ```
 
-Note that three of the evaluators are **deterministic**. Before reaching for an LLM judge, ask what you can check with a rule — it is cheaper, faster, and never has a bad day.
+Note that three of the evaluators are **deterministic**. Before reaching for an LLM judge, ask what you can check with a rule, it is cheaper, faster, and never has a bad day.
 
 ---
 
@@ -214,11 +214,11 @@ export LANGSMITH_API_KEY=lsv2_...
 .venv/bin/python evals/run.py
 ```
 
-**Expected output — illustrative.** LangSmith prints a results table and a link. What matters:
+**Expected output, illustrative.** LangSmith prints a results table and a link. What matters:
 
 - Every example has a score for all three evaluators
 - `declines_when_out_of_scope` is **1.0 on the France question**. If it is 0, your agent answered from world knowledge and Module 7's scoping is not holding
-- `retrieved_correct_doc` is below 1.0 on at least one example — if it is a perfect 1.0 on the first run, your dataset is too easy
+- `retrieved_correct_doc` is below 1.0 on at least one example, if it is a perfect 1.0 on the first run, your dataset is too easy
 
 That last check matters. A first eval that passes everything has told you nothing except that you wrote flattering questions.
 
@@ -273,10 +273,10 @@ The graded part is the regression column. Any change that improves nothing is ea
    Real traces, especially failures. Invented questions are too clean to be predictive.
 
 3. **When is LLM-as-judge appropriate, and what is its main failure mode?**
-   For qualities no rule expresses — faithfulness, relevance, tone. It is unreliable on numbers and fine distinctions, and generous when grading its own model.
+   For qualities no rule expresses, faithfulness, relevance, tone. It is unreliable on numbers and fine distinctions, and generous when grading its own model.
 
 4. **Your change lifts the mean but three previously-passing examples now fail. Ship it?**
-   Not on the mean alone. Look at what broke and decide deliberately — the mean is hiding the trade.
+   Not on the mean alone. Look at what broke and decide deliberately, the mean is hiding the trade.
 
 5. **Why version datasets?**
    Otherwise scores from different weeks are not comparable and the whole record becomes meaningless.
@@ -285,10 +285,10 @@ The graded part is the regression column. Any change that improves nothing is ea
 
 ## 9. References
 
-- LangSmith evaluation — https://docs.langchain.com/langsmith/evaluation
-- Evaluating a graph — https://docs.langchain.com/langsmith/evaluate-graph
-- API reference — https://reference.langchain.com
+- LangSmith evaluation: https://docs.langchain.com/langsmith/evaluation
+- Evaluating a graph: https://docs.langchain.com/langsmith/evaluate-graph
+- API reference: https://reference.langchain.com
 
 ---
 
-*Next: [Module 10 — LangGraph](./langchain-010-langgraph.md), for the cases `create_agent` cannot express.*
+*Next: [Module 10: LangGraph](./langchain-010-langgraph.md), for the cases `create_agent` cannot express.*

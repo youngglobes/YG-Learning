@@ -1,15 +1,15 @@
-# Module 1 — Models & Messages
+# Module 1: Models & Messages
 
 **Phase:** Core
 **Prerequisites:** Module 0
 **Verified against:** `langchain` 1.3.14, `langchain-core` 1.5.3, Python 3.12
-**Estimated time:** 3–4 hours
+**Estimated time:** 3-4 hours
 
 ---
 
 ## 1. Why this matters
 
-Everything in LangChain is a list of messages. The agent loop appends to it, tools append to it, retrieval appends to it. When something goes wrong in Module 7 — retrieved context that "disappears", a tool result the model ignores — the debugging move is always the same: print the message list and look at what the model actually received.
+Everything in LangChain is a list of messages. The agent loop appends to it, tools append to it, retrieval appends to it. When something goes wrong in Module 7: retrieved context that "disappears", a tool result the model ignores, the debugging move is always the same: print the message list and look at what the model actually received.
 
 People who skip this module debug by changing prompt wording and hoping. People who do it debug by reading.
 
@@ -23,20 +23,23 @@ One function, any provider:
 
 ```python
 from langchain.chat_models import init_chat_model
+import os
 
-model = init_chat_model("anthropic:claude-opus-5")
-model = init_chat_model("openai:gpt-5.5")
-model = init_chat_model("ollama:llama3.2")          # local, no key
+MODEL = os.environ["AGENT_MODEL"]   # set in your .env, any provider
+
+model = init_chat_model(MODEL)
+model = init_chat_model(MODEL)
+model = init_chat_model(MODEL)          # local, no key
 ```
 
-The `provider:model` string keeps provider choice as configuration rather than code. Its signature is `(model, model_provider, configurable_fields, config_prefix, **kwargs)` — `kwargs` is where provider-specific options like `max_tokens` go.
+The `provider:model` string keeps provider choice as configuration rather than code. Its signature is `(model, model_provider, configurable_fields, config_prefix, **kwargs)`, `kwargs` is where provider-specific options like `max_tokens` go.
 
 ### 2.2 The four message types
 
 | Type | Who writes it | Purpose |
 |---|---|---|
 | `SystemMessage` | You | Standing instructions. Trusted. |
-| `HumanMessage` | The user | The request. **Untrusted** — see Module 7. |
+| `HumanMessage` | The user | The request. **Untrusted**: see Module 7. |
 | `AIMessage` | The model | Its reply, and any tool calls it wants |
 | `ToolMessage` | Your code | The result of running a tool |
 
@@ -55,9 +58,9 @@ This trips up nearly everyone migrating from older tutorials, because the answer
 'hello'
 ```
 
-- **`.content_blocks`** — the structured, provider-neutral representation. A list of typed blocks. This is what you inspect when a message might hold more than plain text: reasoning, images, tool calls, citations.
-- **`.text`** — the plain string, for when you just want to print the answer.
-- **`.content`** — the raw underlying value. Provider-shaped and not guaranteed stable. Avoid it in new code.
+- **`.content_blocks`**: the structured, provider-neutral representation. A list of typed blocks. This is what you inspect when a message might hold more than plain text: reasoning, images, tool calls, citations.
+- **`.text`**: the plain string, for when you just want to print the answer.
+- **`.content`**: the raw underlying value. Provider-shaped and not guaranteed stable. Avoid it in new code.
 
 Rule: **`.text` to display, `.content_blocks` to inspect.** Old tutorials reach for `.content` because blocks did not exist; that is how you date a tutorial in one line.
 
@@ -65,11 +68,11 @@ Rule: **`.text` to display, `.content_blocks` to inspect.** Old tutorials reach 
 
 - **Tokens** are the model's unit of text. Roughly ¾ of a word in English; far worse for code and non-English scripts.
 - **Context window** caps input + output for a single call. Exceeding it is an error, not a silent truncation.
-- **Pricing** is per million tokens, and **input and output are priced differently** — output is typically 3–5× input.
+- **Pricing** is per million tokens, and **input and output are priced differently**: output is typically 3-5× input.
 
 Two consequences worth internalising now:
 
-**In an agent loop the whole history is re-sent on every step.** A ten-step loop does not send your prompt once — it re-sends a growing transcript ten times. Cost grows quadratically with loop length, not linearly. This is the single most surprising cost fact in agent work.
+**In an agent loop the whole history is re-sent on every step.** A ten-step loop does not send your prompt once, it re-sends a growing transcript ten times. Cost grows quadratically with loop length, not linearly. This is the single most surprising cost fact in agent work.
 
 **Do not estimate tokens with `tiktoken` for a non-OpenAI model.** It is OpenAI's tokenizer. Against Claude it undercounts materially, and worse on code. Use the provider's own token counting endpoint.
 
@@ -78,14 +81,17 @@ Two consequences worth internalising now:
 ## 3. Walkthrough
 
 ```python
-"""Module 1 — anatomy of a message list."""
+"""Module 1: anatomy of a message list."""
 from dotenv import load_dotenv
 load_dotenv()
+import os
+
+MODEL = os.environ["AGENT_MODEL"]   # set in your .env, any provider
 
 from langchain.chat_models import init_chat_model
 from langchain.messages import HumanMessage, SystemMessage
 
-model = init_chat_model("anthropic:claude-opus-5")
+model = init_chat_model(MODEL)
 
 messages = [
     SystemMessage("You are a terse assistant. One sentence maximum."),
@@ -100,7 +106,7 @@ print("content_blocks:", response.content_blocks)
 print("usage:         ", response.usage_metadata)
 ```
 
-`usage_metadata` is where the token counts live — input, output, total. Look at it on every call while you are learning. It is the only honest feedback loop on cost.
+`usage_metadata` is where the token counts live, input, output, total. Look at it on every call while you are learning. It is the only honest feedback loop on cost.
 
 ### 3.1 Watching history grow
 
@@ -126,7 +132,7 @@ for question in ["What is 2+2?", "And times 10?", "And minus 7?"]:
 .venv/bin/python messages_anatomy.py
 ```
 
-**Expected output — illustrative:**
+**Expected output, illustrative:**
 
 ```
 type:           AIMessage
@@ -170,9 +176,9 @@ That last requirement is the point of the assignment. Model prices change. An es
 |---|---|---|
 | `AttributeError: 'AIMessage' object has no attribute 'content_blocks'` | `langchain-core` < 1.0 | `pip install -U langchain-core` |
 | You get an object where you expected a string | Read `.content` instead of `.text` | Use `.text` to display |
-| Cost estimate 20%+ off for Claude | `tiktoken` — wrong tokenizer | Use the provider's token counter |
+| Cost estimate 20%+ off for Claude | `tiktoken`, wrong tokenizer | Use the provider's token counter |
 | `usage_metadata` is `None` | Some providers omit it | Check provider docs; do not assume it is free |
-| Costs far higher than expected in a loop | History re-sent each step | Expected — see §2.4. Cap iterations, trim history |
+| Costs far higher than expected in a loop | History re-sent each step | Expected, see §2.4. Cap iterations, trim history |
 | Context-window error on a long document | Input exceeds the window | Chunk it (Module 6), or use a larger-window model |
 
 ---
@@ -182,7 +188,7 @@ That last requirement is the point of the assignment. Model prices change. An es
 1. **What is in `result["messages"]` after a tool-calling turn?**
    Five messages: System, Human, AI (with the tool call), Tool (the result), AI (the final answer).
 
-2. **`.text` or `.content_blocks` — which for displaying an answer, which for inspecting a response that may contain images or tool calls?**
+2. **`.text` or `.content_blocks`, which for displaying an answer, which for inspecting a response that may contain images or tool calls?**
    `.text` to display; `.content_blocks` to inspect.
 
 3. **Why does a 10-step agent loop cost far more than 10 single calls?**
@@ -198,10 +204,10 @@ That last requirement is the point of the assignment. Model prices change. An es
 
 ## 9. References
 
-- Models — https://docs.langchain.com/oss/python/langchain/models
-- Messages and content blocks — https://docs.langchain.com/oss/python/langchain/messages
-- API reference — https://reference.langchain.com
+- Models: https://docs.langchain.com/oss/python/langchain/models
+- Messages and content blocks: https://docs.langchain.com/oss/python/langchain/messages
+- API reference: https://reference.langchain.com
 
 ---
 
-*Next: [Module 2 — Tools](./langchain-002-tools.md). You will find out why a docstring is an interface, not a comment.*
+*Next: [Module 2: Tools](./langchain-002-tools.md). You will find out why a docstring is an interface, not a comment.*

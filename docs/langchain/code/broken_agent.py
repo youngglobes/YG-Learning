@@ -1,4 +1,4 @@
-"""Module 3 assignment — a deliberately broken agent.
+"""Module 3 assignment, a deliberately broken agent.
 
 It loops until the call limit on a question that needs one lookup.
 
@@ -41,7 +41,7 @@ def lookup_order(order_id: str) -> str:
 
 
 agent = create_agent(
-    model="anthropic:claude-opus-5",
+    model=MODEL,
     tools=[lookup_order],
     system_prompt=(
         "You are a customer service assistant. Use lookup_order to answer "
@@ -59,7 +59,7 @@ if __name__ == "__main__":
     print(result["messages"][-1].text)
 
 # ======================================================================
-# SPOILER — read only after writing your diagnosis.
+# SPOILER, read only after writing your diagnosis.
 #
 # Two faults compound:
 #

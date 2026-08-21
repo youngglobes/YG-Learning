@@ -1,9 +1,9 @@
-# Module 11 — Multi-Agent
+# Module 11: Multi-Agent
 
 **Phase:** Orchestration & Production
-**Prerequisites:** Modules 0–10
+**Prerequisites:** Modules 0-10
 **Verified against:** `langgraph` 1.2.10, `langchain` 1.3.14, Python 3.12
-**Estimated time:** 5–6 hours
+**Estimated time:** 5-6 hours
 
 ---
 
@@ -11,7 +11,7 @@
 
 Multi-agent architectures are the most fashionable pattern in the field and, in commercial work, frequently the wrong answer.
 
-This module teaches the pattern properly — you will meet systems built this way and you need to work on them. It also teaches the discipline to avoid it, which is the part conference talks leave out.
+This module teaches the pattern properly, you will meet systems built this way and you need to work on them. It also teaches the discipline to avoid it, which is the part conference talks leave out.
 
 The honest framing: a multi-agent system is a distributed system where the components are non-deterministic and expensive. Every property that makes distributed systems hard applies, plus some new ones.
 
@@ -21,19 +21,19 @@ The honest framing: a multi-agent system is a distributed system where the compo
 
 ### 2.1 The cost, stated plainly
 
-Every delegation costs a full context re-establishment. The specialist does not share the coordinator's conversation — it must be briefed, it re-reads what it needs, it works, it reports back, and then the coordinator re-reads the report.
+Every delegation costs a full context re-establishment. The specialist does not share the coordinator's conversation, it must be briefed, it re-reads what it needs, it works, it reports back, and then the coordinator re-reads the report.
 
 Concretely, one delegation is roughly: coordinator decides (model call) → specialist briefed (model call, full prompt) → specialist works (n model calls) → specialist reports → coordinator reads and integrates (model call). Four-plus model calls where a single agent with the right tool would have made one.
 
 Latency compounds the same way, and it is serial unless you deliberately parallelise.
 
-**So the bar is: does splitting buy something worth 3–5× the cost?** Sometimes yes. Often the honest answer is that one agent with better tools would do it.
+**So the bar is: does splitting buy something worth 3-5× the cost?** Sometimes yes. Often the honest answer is that one agent with better tools would do it.
 
 ### 2.2 When it genuinely helps
 
-- **Independent parallel work.** Five documents to analyse with no interdependence — fan out, run concurrently, wall-clock time drops even as token cost rises.
+- **Independent parallel work.** Five documents to analyse with no interdependence, fan out, run concurrently, wall-clock time drops even as token cost rises.
 - **Context isolation.** A subtask requiring 50 pages of reading, where you want the findings but not the 50 pages, in the coordinator's window.
-- **Genuinely different tool sets or permissions.** A read-only researcher and a write-capable publisher should not be one agent holding both capabilities — this is the least-privilege argument from Module 7, expressed structurally.
+- **Genuinely different tool sets or permissions.** A read-only researcher and a write-capable publisher should not be one agent holding both capabilities, this is the least-privilege argument from Module 7, expressed structurally.
 - **Different models per role.** A cheap model for bulk extraction, an expensive one for synthesis.
 
 ### 2.3 When it does not
@@ -52,8 +52,11 @@ The clean way to express this in LangChain is to make **each specialist a tool**
 ```python
 from langchain.agents import create_agent
 from langchain.tools import tool
+import os
 
-researcher = create_agent(model="anthropic:claude-opus-5", tools=[search],
+MODEL = os.environ["AGENT_MODEL"]   # set in your .env, any provider
+
+researcher = create_agent(model=MODEL, tools=[search],
                           system_prompt="Research thoroughly. Report findings with sources.")
 
 @tool(parse_docstring=True)
@@ -71,7 +74,7 @@ def delegate_research(question: str) -> str:
     return result["messages"][-1].text
 ```
 
-Two things this buys. Delegation reuses everything from Module 2 — the description controls *when* the coordinator delegates, and the "do not use for…" line is what stops over-delegation. And the specialist's internal turns stay out of the coordinator's context; only the report comes back.
+Two things this buys. Delegation reuses everything from Module 2: the description controls *when* the coordinator delegates, and the "do not use for…" line is what stops over-delegation. And the specialist's internal turns stay out of the coordinator's context; only the report comes back.
 
 **The docstring's "sees none of this conversation" is load-bearing.** It is the most common multi-agent bug, and §2.5 is about it.
 
@@ -86,13 +89,13 @@ Ways this bites:
 - Assumed shared state that only exists in the coordinator's history
 - Output format assumed rather than specified, so the report comes back unusable
 
-The fix is prompt discipline on the coordinator: *"Each delegated task must be complete and standalone. Include all identifiers, paths, and constraints — the specialist cannot see this conversation."*
+The fix is prompt discipline on the coordinator: *"Each delegated task must be complete and standalone. Include all identifiers, paths, and constraints, the specialist cannot see this conversation."*
 
 ### 2.6 Handoff vs. delegation
 
 **Delegation** (above): the specialist reports back and the coordinator keeps control. Predictable; the coordinator can verify.
 
-**Handoff:** control transfers and does not return — a triage agent passes a conversation to a billing agent permanently. Implemented in LangGraph with `Command(goto=...)`, which carries `graph`, `update`, `resume`, `goto`, `PARENT`.
+**Handoff:** control transfers and does not return, a triage agent passes a conversation to a billing agent permanently. Implemented in LangGraph with `Command(goto=...)`, which carries `graph`, `update`, `resume`, `goto`, `PARENT`.
 
 Prefer delegation unless the conversation genuinely belongs to the other agent from then on. Handoffs make failure harder to reason about because there is no longer anyone supervising.
 
@@ -110,9 +113,12 @@ Prefer delegation unless the conversation genuinely belongs to the other agent f
 A support triage system: classify, route to a specialist, escalate when unsure.
 
 ```python
-"""Module 11 — supervisor with specialists as tools, and a cost baseline."""
+"""Module 11: supervisor with specialists as tools, and a cost baseline."""
 from dotenv import load_dotenv
 load_dotenv()
+import os
+
+MODEL = os.environ["AGENT_MODEL"]   # set in your .env, any provider
 
 from langchain.agents import create_agent
 from langchain.agents.middleware import ModelCallLimitMiddleware
@@ -120,7 +126,7 @@ from langchain.tools import tool
 
 # ---- specialists: narrow prompts, narrow tools --------------------------
 billing = create_agent(
-    model="anthropic:claude-opus-5",
+    model=MODEL,
     tools=[],
     system_prompt=("You handle billing questions: invoices, refunds, payment "
                    "failures. Answer only from what you are told. If the task "
@@ -129,7 +135,7 @@ billing = create_agent(
 )
 
 technical = create_agent(
-    model="anthropic:claude-opus-5",
+    model=MODEL,
     tools=[],
     system_prompt=("You handle technical support: errors, integrations, "
                    "configuration. Give concrete steps. If you cannot solve "
@@ -173,17 +179,17 @@ def ask_technical(task: str) -> str:
 
 
 supervisor = create_agent(
-    model="anthropic:claude-opus-5",
+    model=MODEL,
     tools=[ask_billing, ask_technical],
     system_prompt=(
         "You triage customer support tickets.\n\n"
         "Delegate to exactly one specialist when the ticket clearly belongs "
         "to them. Answer directly if it is a simple question you can handle "
-        "in one step — delegation is expensive.\n\n"
+        "in one step, delegation is expensive.\n\n"
         "Every delegated task MUST be self-contained: include the customer "
         "name, all identifiers, amounts, and error text. The specialist "
         "cannot see this conversation.\n\n"
-        "If the ticket is ambiguous or spans both areas, do not guess — "
+        "If the ticket is ambiguous or spans both areas, do not guess, "
         "escalate to a human and say why."
     ),
     middleware=[ModelCallLimitMiddleware(run_limit=8)],
@@ -209,7 +215,7 @@ for t in TICKETS:
 
 ## 4. Run it
 
-> **On a small local model, some checks below will fail — and that is expected.**
+> **On a small local model, some checks below will fail, and that is expected.**
 > The behavioural checks in this section depend on model capability. See the
 > capability tier table in [Choosing your model](./model-setup.md) before
 > concluding your code is wrong.
@@ -218,7 +224,7 @@ for t in TICKETS:
 .venv/bin/python triage.py
 ```
 
-**Expected output — illustrative.** Four behaviours, and two of them are about *restraint*:
+**Expected output, illustrative.** Four behaviours, and two of them are about *restraint*:
 
 1. **Invoice ticket** → `{'billing': 1}`. Delegated once, and the task passed along includes the invoice number and amount.
 2. **API error ticket** → `{'technical': 1}`.
@@ -247,7 +253,7 @@ Requirements:
 
 - A supervisor and at least two specialists with genuinely different prompts and tool sets
 - Delegation tools whose docstrings state when **not** to delegate
-- Explicit escalation to a human on ambiguity — no guessing
+- Explicit escalation to a human on ambiguity, no guessing
 - Structured results from specialists (Module 4) with an explicit success/failure field, so a failure cannot be read as success
 - Call limits on **every** agent including the supervisor
 - Full tracing
@@ -268,7 +274,7 @@ Building the baseline is not optional. Without it you have no evidence, only arc
 | Symptom | Cause | Fix |
 |---|---|---|
 | Specialist misunderstands the task | Task not self-contained (§2.5) | Include all identifiers and context in the delegated message |
-| Costs 5× the single-agent version | Expected — that is the pattern | Justify it or drop back to one agent |
+| Costs 5× the single-agent version | Expected, that is the pattern | Justify it or drop back to one agent |
 | Agents delegate back and forth | No depth cap | Depth counter in state; call limits everywhere |
 | Failures reported as successes | Specialist returns prose | Structured output with a status field |
 | Supervisor delegates trivial questions | No "do not delegate" guidance | Add it to the docstring and prompt |
@@ -280,7 +286,7 @@ Building the baseline is not optional. Without it you have no evidence, only arc
 ## 8. Check yourself
 
 1. **What does one delegation actually cost?**
-   Roughly 4+ model calls — decide, brief, work, report, integrate — plus serial latency, against one call for a single agent with the right tool.
+   Roughly 4+ model calls, decide, brief, work, report, integrate, plus serial latency, against one call for a single agent with the right tool.
 
 2. **Three situations where multi-agent genuinely earns its cost?**
    Independent parallel work; context isolation for reading-heavy subtasks; genuinely different tool sets or permissions (or different models per role).
@@ -298,10 +304,10 @@ Building the baseline is not optional. Without it you have no evidence, only arc
 
 ## 9. References
 
-- Multi-agent — https://docs.langchain.com/oss/python/langchain/multi-agent
-- LangGraph — https://docs.langchain.com/oss/python/langgraph/overview
-- API reference — https://reference.langchain.com
+- Multi-agent: https://docs.langchain.com/oss/python/langchain/multi-agent
+- LangGraph: https://docs.langchain.com/oss/python/langgraph/overview
+- API reference: https://reference.langchain.com
 
 ---
 
-*Next: [Module 12 — Production](./langchain-012-production.md), and the capstone.*
+*Next: [Module 12: Production](./langchain-012-production.md), and the capstone.*

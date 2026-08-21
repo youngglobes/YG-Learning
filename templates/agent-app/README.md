@@ -11,7 +11,7 @@ Clone it, rename it, build in it. It answers the question no tutorial answers:
 ```bash
 cp -r templates/agent-app ~/dev/my-project && cd ~/dev/my-project
 cp .env.example .env          # then edit it
-make install-ollama           # or: make install-claude
+make install PROVIDER=openai  # or google-genai, anthropic, ollama, ...
 make test                     # passes with no API key
 make run
 ```
@@ -37,11 +37,11 @@ corpus/         documents for RAG projects (gitignored)
 ### Why it is split this way
 
 **`config.py` is the only file that knows which model you use.** Switching
-between Claude and Ollama is an env var, never a code change. That is the
+provider is an env var, never a code change. That is the
 provider-neutrality from Module 1, made real.
 
 **`agent.py` accepts an injected model.** That is what makes the tests
-possible — pass a fake in tests, use the configured one in production.
+possible, pass a fake in tests, use the configured one in production.
 
 **`tools.py` is separate** because tools are plain functions and deserve plain
 unit tests that never touch a model.
@@ -62,14 +62,14 @@ class FakeToolModel(GenericFakeChatModel):
 ```
 
 With that, `make test` runs in under a second, costs nothing, and needs no
-key — so it belongs in CI on every commit.
+key, so it belongs in CI on every commit.
 
 **What you can test this way:** tool logic, tool schemas, agent wiring, thread
 isolation, memory behaviour, error handling. Everything you actually own.
 
 **What you cannot:** whether the model declines, cites, or resists injection.
 Those depend on the model. Write them as tests, mark them
-`@pytest.mark.skipif`, and run them deliberately — `test_agent.py` has one as
+`@pytest.mark.skipif`, and run them deliberately, `test_agent.py` has one as
 an example.
 
 ---
@@ -105,7 +105,7 @@ and a `retrieve_context` tool with
 `make eval` into CI.
 
 **Middleware (Module 8):** add to the list in `agent.py`. Check the built-ins
-first — there are about twenty.
+first, there are about twenty.
 
 ---
 
@@ -113,9 +113,7 @@ first — there are about twenty.
 
 | Command | Does |
 |---|---|
-| `make install` | venv + dev + rag deps |
-| `make install-claude` | the above + `langchain-anthropic` |
-| `make install-ollama` | the above + `langchain-ollama` |
-| `make test` | pytest — no key needed |
+| `make install PROVIDER=x` | venv, dev and rag deps, plus `langchain[x]` |
+| `make test` | pytest, no key needed |
 | `make lint` | ruff |
 | `make run` | one sample question |

@@ -2,7 +2,7 @@
 
 Every code sample here has been run against the installed packages, so imports,
 signatures, and data structures are correct. What has **not** been confirmed is
-**behaviour against a live model** — whether the agent actually declines, cites,
+**behaviour against a live model**: whether the agent actually declines, cites,
 refrains, or resists.
 
 This file lists every one of those claims. Work through it with a real model and
@@ -23,16 +23,16 @@ Tested by:    ...
 
 ---
 
-## Module 0 — Setup & Mental Model
+## Module 0: Setup & Mental Model
 
 | # | Claim | ✓ | Notes |
 |---|---|---|---|
 | 0.1 | The one-screen agent returns a real answer | ☐ | |
-| 0.2 | Changing `get_weather` to return `"It's -40°C"` **changes the answer** — proving the tool was genuinely called, not imagined | ☐ | |
+| 0.2 | Changing `get_weather` to return `"It's -40°C"` **changes the answer**, proving the tool was genuinely called, not imagined | ☐ | |
 
 ---
 
-## Module 1 — Models & Messages
+## Module 1: Models & Messages
 
 | # | Claim | ✓ | Notes |
 |---|---|---|---|
@@ -45,7 +45,7 @@ Tested by:    ...
 
 ---
 
-## Module 2 — Tools
+## Module 2: Tools
 
 | # | Claim | ✓ | Notes |
 |---|---|---|---|
@@ -55,11 +55,11 @@ Tested by:    ...
 | 2.4 | **"Thanks" → `tool-calling turns: 0`** | ☐ | |
 | 2.5 | Replacing the docstring with `"""Gets stuff."""` **degrades** tool selection (Exercise 5.2) | ☐ | |
 
-*2.4 is capability-dependent — expected to fail on small local models.*
+*2.4 is capability-dependent, expected to fail on small local models.*
 
 ---
 
-## Module 3 — Agents & Tracing
+## Module 3: Agents & Tracing
 
 | # | Claim | ✓ | Notes |
 |---|---|---|---|
@@ -70,11 +70,11 @@ Tested by:    ...
 | 3.5 | `broken_agent.py` **actually loops** and hits the cap | ☐ | |
 | 3.6 | The fix in the spoiler block resolves it | ☐ | |
 
-*3.5 is the one to check hardest — the whole assignment depends on it looping.*
+*3.5 is the one to check hardest, the whole assignment depends on it looping.*
 
 ---
 
-## Module 4 — Structured Output
+## Module 4: Structured Output
 
 | # | Claim | ✓ | Notes |
 |---|---|---|---|
@@ -84,11 +84,11 @@ Tested by:    ...
 | 4.4 | **Sparse email → `company` and `budget_inr` are `None`, not invented** | ☐ | |
 | 4.5 | Making `company` required → model **invents** a company (Exercise 5.2) | ☐ | |
 
-*4.4 and 4.5 are the module's core argument. 4.5 failing to reproduce would be interesting — note exactly what it produced.*
+*4.4 and 4.5 are the module's core argument. 4.5 failing to reproduce would be interesting, note exactly what it produced.*
 
 ---
 
-## Module 5 — Memory & State
+## Module 5: Memory & State
 
 | # | Claim | ✓ | Notes |
 |---|---|---|---|
@@ -102,7 +102,7 @@ Tested by:    ...
 
 ---
 
-## Module 6 — Retrieval Foundations *(no model needed)*
+## Module 6: Retrieval Foundations *(no model needed)*
 
 | # | Claim | ✓ | Notes |
 |---|---|---|---|
@@ -112,11 +112,11 @@ Tested by:    ...
 | 6.4 | Nonsense query still returns `k` results, at much lower scores | ☐ | |
 | 6.5 | Chunk-size comparison (300/1000/3000) shows a measurable difference | ☐ | |
 
-*6.1–6.4 were verified locally. 6.5 needs your own corpus.*
+*6.1-6.4 were verified locally. 6.5 needs your own corpus.*
 
 ---
 
-## Module 7 — Agentic RAG
+## Module 7: Agentic RAG
 
 | # | Claim | ✓ | Notes |
 |---|---|---|---|
@@ -129,11 +129,11 @@ Tested by:    ...
 | 7.7 | Delayed-instruction payload fails | ☐ | |
 | 7.8 | Encoded/obfuscated payload fails | ☐ | |
 
-*7.4–7.8 are the assignment. **Expect some to succeed** — that is a real finding, not a bug. Record which, and note that the read-only toolset limited the damage regardless.*
+*7.4-7.8 are the assignment. **Expect some to succeed**: that is a real finding, not a bug. Record which, and note that the read-only toolset limited the damage regardless.*
 
 ---
 
-## Module 8 — Middleware
+## Module 8: Middleware
 
 | # | Claim | ✓ | Notes |
 |---|---|---|---|
@@ -143,24 +143,24 @@ Tested by:    ...
 | 8.4 | Flipping `ALLOW_EXPENSIVE = True` changes `blocked` → `tool_call` | ☐ | |
 | 8.5 | Moving `PIIMiddleware` last changes when redaction happens (Exercise 5.2) | ☐ | |
 
-*8.1 was verified with a fake model. 8.3 is worth checking carefully — confirm in the trace, not just the output.*
+*8.1 was verified with a fake model. 8.3 is worth checking carefully, confirm in the trace, not just the output.*
 
 ---
 
-## Module 9 — Evaluation
+## Module 9: Evaluation
 
 | # | Claim | ✓ | Notes |
 |---|---|---|---|
 | 9.1 | `evaluate()` runs and produces per-example scores | ☐ | |
 | 9.2 | `declines_when_out_of_scope` scores 1.0 on the France question | ☐ | |
-| 9.3 | `retrieved_correct_doc` is **below 1.0** somewhere — if perfect, the dataset is too easy | ☐ | |
+| 9.3 | `retrieved_correct_doc` is **below 1.0** somewhere, if perfect, the dataset is too easy | ☐ | |
 | 9.4 | Changing `k` from 2 to 5 produces a **visible trade-off**, not uniform improvement | ☐ | |
 
-*9.4 is the module's thesis. If everything improves with no cost, say so — it would mean the dataset is not discriminating.*
+*9.4 is the module's thesis. If everything improves with no cost, say so, it would mean the dataset is not discriminating.*
 
 ---
 
-## Module 10 — LangGraph
+## Module 10: LangGraph
 
 | # | Claim | ✓ | Notes |
 |---|---|---|---|
@@ -170,11 +170,11 @@ Tested by:    ...
 | 10.4 | Removing `add_messages` breaks history as described (Exercise 5.2) | ☐ | |
 | 10.5 | Interrupt survives a **process restart** with a persistent checkpointer | ☐ | |
 
-*10.5 is the assignment's hard requirement and the one most likely to have a gap. Test it properly — new process, not same-process resume.*
+*10.5 is the assignment's hard requirement and the one most likely to have a gap. Test it properly, new process, not same-process resume.*
 
 ---
 
-## Module 11 — Multi-Agent
+## Module 11: Multi-Agent
 
 | # | Claim | ✓ | Notes |
 |---|---|---|---|
@@ -189,7 +189,7 @@ Tested by:    ...
 
 ---
 
-## Module 12 — Production
+## Module 12: Production
 
 | # | Claim | ✓ | Notes |
 |---|---|---|---|
@@ -216,21 +216,21 @@ simply wrong. This is the most valuable output of the pass.
 
 ## Time check
 
-Each module carries an estimate. Record the real number — the estimates are
+Each module carries an estimate. Record the real number, the estimates are
 guesses and the joiners will plan around them.
 
 | Module | Estimated | Actual |
 |---|---|---|
-| 0 | 1–2 h | |
-| 1 | 3–4 h | |
-| 2 | 4–5 h | |
-| 3 | 4–5 h | |
-| 4 | 4–5 h | |
-| 5 | 4–5 h | |
-| 6 | 6–8 h | |
-| 7 | 6–8 h | |
-| 8 | 4–5 h | |
-| 9 | 6–8 h | |
-| 10 | 6–8 h | |
-| 11 | 5–6 h | |
-| 12 | 10–15 h | |
+| 0 | 1-2 h | |
+| 1 | 3-4 h | |
+| 2 | 4-5 h | |
+| 3 | 4-5 h | |
+| 4 | 4-5 h | |
+| 5 | 4-5 h | |
+| 6 | 6-8 h | |
+| 7 | 6-8 h | |
+| 8 | 4-5 h | |
+| 9 | 6-8 h | |
+| 10 | 6-8 h | |
+| 11 | 5-6 h | |
+| 12 | 10-15 h | |

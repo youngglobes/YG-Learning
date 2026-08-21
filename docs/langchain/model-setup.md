@@ -2,65 +2,79 @@
 
 **Read this before Module 0.**
 
-This tutorial supports **two setups**. Pick one:
-
-| | **Claude** (hosted) | **Ollama** (local) |
-|---|---|---|
-| Cost | you pay, ~₹700 for the whole path on Haiku 4.5 | free |
-| Needs | an API key | a reasonably specced machine |
-| Setup | ~5 min | ~20 min |
-| Speed | fast | depends on your hardware |
-| Behaves as the modules describe | yes | mostly — see capability tiers below |
-
-**Nobody is required to buy anything.** Ollama completes every module at no
-cost. If you already have a Claude key, or would rather spend a few hundred
-rupees than wait on a slow local model, use that instead. Your call.
-
-These two are what the examples are written and maintained for. LangChain
-speaks to **23 providers** through the same `provider:model` interface —
-OpenAI, Gemini, Groq, Mistral, DeepSeek, OpenRouter, Bedrock, Vertex and more
-— and you are welcome to use any of them. Nothing here has been checked
-against them, so you are on your own for differences. The full list, with the
-package and example model string for each, is in the `.env` example in
-[Module 0](./langchain-000-setup-and-mental-model.md) and in
-`templates/agent-app/.env.example`.
-
-> **Verification status, stated plainly:** every code sample has been run
-> against the installed packages, so imports, signatures, and data structures
-> are correct. The *behavioural* checks — does the agent decline, does it
-> resist injection — have not yet been confirmed against a live model on
-> either setup. Treat the "Expected output" blocks as illustrative until
-> someone completes a cohort and corrects them.
-
-Switching is one string, and that single-line swap *is* one of LangChain's real
-selling points. You will be learning it by living it:
-
-```python
-model="anthropic:claude-haiku-4-5"   # Claude - cheapest, $1/$5 per MTok
-model="ollama:llama3.1:8b"           # Ollama
-```
-
-**A practical middle path:** start on Ollama for Modules 0–9, then switch to
-Claude for Modules 10–12 and the capstone, where reasoning quality is the
-actual subject. Costs a fraction of the full-path figure and defers any
-spending decision until you already know the path is worth it to you.
+This path is provider neutral. Every module works with any model LangChain
+supports, and switching between them is one string. Pick whichever you already
+have access to, or run one locally for free.
 
 ---
 
-## Ollama (local)
+## Pick a provider
 
-### Will your machine cope?
+Install `langchain` plus the extra for your provider, set the key, and use the
+matching model string. **Nothing else in the tutorial changes.**
 
-Check first — this matters more than people expect:
+| Provider | Install | API key variable | Example model string |
+|---|---|---|---|
+| OpenAI | `"langchain[openai]"` | `OPENAI_API_KEY` | `openai:gpt-5.5` |
+| Google Gemini | `"langchain[google-genai]"` | `GOOGLE_API_KEY` | `google_genai:gemini-2.5-flash-lite` |
+| Anthropic | `"langchain[anthropic]"` | `ANTHROPIC_API_KEY` | `anthropic:claude-haiku-4-5` |
+| Groq | `"langchain[groq]"` | `GROQ_API_KEY` | `groq:llama-3.3-70b-versatile` |
+| Mistral | `"langchain[mistralai]"` | `MISTRAL_API_KEY` | `mistralai:mistral-large-latest` |
+| DeepSeek | `"langchain[deepseek]"` | `DEEPSEEK_API_KEY` | `deepseek:deepseek-chat` |
+| Fireworks | `"langchain[fireworks]"` | `FIREWORKS_API_KEY` | `fireworks:accounts/fireworks/models/...` |
+| Together | `"langchain[together]"` | `TOGETHER_API_KEY` | `together:...` |
+| Baseten | `"langchain[baseten]"` | `BASETEN_API_KEY` | `baseten:zai-org/GLM-5.2` |
+| xAI | `"langchain[xai]"` | `XAI_API_KEY` | `xai:grok-...` |
+| Perplexity | `"langchain[perplexity]"` | `PERPLEXITY_API_KEY` | `perplexity:...` |
+| Hugging Face | `"langchain[huggingface]"` | `HUGGINGFACEHUB_API_TOKEN` | `huggingface:microsoft/Phi-3-mini-4k-instruct` |
+| Azure OpenAI | `"langchain[openai]"` | `AZURE_OPENAI_API_KEY` + endpoint | `azure_openai:gpt-5.5` |
+| AWS Bedrock | `"langchain[aws]"` | `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION` | `bedrock_converse:us.anthropic.claude-sonnet-4-6` |
+| Google Vertex | `"langchain[google-vertexai]"` | GCP application default credentials | `google_vertexai:...` |
+| OpenRouter | `pip install langchain-openrouter` | `OPENROUTER_API_KEY` | `openrouter:anthropic/claude-sonnet-4-6` |
+| **Ollama (local)** | `"langchain[ollama]"` | **none** | `ollama:llama3.1:8b` |
 
-```bash
-free -h                  # Linux / WSL: look at "total"
-nproc                    # core count
-nvidia-smi               # GPU? if this errors, you are CPU-only
+There are 23 providers registered in total. If yours is missing from this
+table, check the
+[integrations index](https://docs.langchain.com/oss/python/integrations/providers).
+
+## The code never changes
+
+That is the whole point, and it is worth seeing directly:
+
+```python
+MODEL = "openai:gpt-5.5"                      # or
+MODEL = "google_genai:gemini-2.5-flash-lite"  # or
+MODEL = "anthropic:claude-haiku-4-5"          # or
+MODEL = "ollama:llama3.1:8b"                  # or any of the others
+
+agent = create_agent(model=MODEL, tools=[...], system_prompt="...")
 ```
 
-On WSL, `free -h` shows the **WSL cap**, not your Windows RAM. Raise it in
-`C:\Users\<you>\.wslconfig`:
+Every code sample in this path reads `MODEL` from your `.env`, so you set it
+once in Module 0 and never touch it again.
+
+---
+
+## No key? Run a model locally
+
+Ollama needs no account and costs nothing. Check your machine first:
+
+```bash
+free -h      # Linux / WSL: on WSL this shows the WSL cap, not Windows RAM
+nproc        # core count
+nvidia-smi   # if this errors, you are CPU only
+```
+
+| Free RAM | Model | Speed, CPU only | Verdict |
+|---|---|---|---|
+| under 6 GB | none | | Not viable. Use a hosted provider |
+| 6 to 8 GB | `llama3.2:3b` | 8 to 15 tok/s | Works, but weak at tool calling |
+| 8 to 16 GB | `llama3.1:8b` | 3 to 6 tok/s, much faster with an NVIDIA GPU | The realistic local choice |
+| 16 GB+ with GPU | `qwen2.5:14b` or larger | fast | Comfortable |
+
+An NVIDIA GPU changes everything. An Intel or AMD integrated GPU does not.
+
+On WSL, raise the memory cap in `C:\Users\<you>\.wslconfig`:
 
 ```ini
 [wsl2]
@@ -68,115 +82,95 @@ memory=12GB
 processors=4
 ```
 
-### What you can run
-
-| Free RAM | Model | Speed, CPU-only | Verdict |
-|---|---|---|---|
-| < 6 GB | — | — | Not viable. Use route B, or route C for the no-model modules |
-| 6–8 GB | `llama3.2:3b` | 8–15 tok/s | Works, but weak at tool calling — read the tier table below |
-| 8–16 GB | `llama3.1:8b` | 3–6 tok/s CPU · much faster with an NVIDIA GPU | The realistic local choice |
-| 16 GB+ with GPU | `qwen2.5:14b` or larger | fast | Comfortable |
-
-**An NVIDIA GPU changes everything; an Intel or AMD integrated GPU does not.**
-If `nvidia-smi` errors, assume CPU speeds from the table.
-
-Remember agent loops multiply this. One turn with a tool call is 2+ model calls,
-so 5 tok/s feels like 15–20 seconds per turn, and Module 11's multi-agent
-exercises will feel slow enough to be annoying.
-
-### Install
-
 ```bash
 curl -fsSL https://ollama.com/install.sh | sh
-ollama pull llama3.1:8b          # ~4.7GB
-ollama serve                     # leave running
+ollama pull llama3.1:8b
+ollama serve
 ```
 
-```bash
-pip install langchain-ollama
-```
-
-```python
-model = init_chat_model("ollama:llama3.1:8b")
-```
+Agent loops multiply slowness. One turn with a tool call is two or more model
+calls, so 5 tok/s feels like 15 to 20 seconds per turn.
 
 ---
 
-## Claude (hosted)
+## Using a hosted provider? Cap your spend
 
-Get a key from the Anthropic console. Set a **hard spend cap there before your
-first call** — that is Module 0's first assignment and it is not
-ceremony.
+**Set a hard spend limit in your provider console before your first call.**
+That is Module 0's first assignment and it is not ceremony.
 
-Rough cost for the *entire* 13-module path with exercises — around 1,000 agent
-runs, ~5M input and ~0.5M output tokens:
+Rough size of the whole path: around 1,000 agent runs, roughly 5M input and
+0.5M output tokens. Multiply by your provider's rates. For scale, a small fast
+model at $1 per million input and $5 per million output comes to about $8 for
+the entire 13 modules.
 
-| Model | Whole path | Per MTok in / out |
-|---|---|---|
-| Claude Haiku 4.5 | ~$8 (~₹700) | $1 / $5 |
-| Claude Sonnet 5 | ~$15 (~₹1,300) | $2 / $10 |
-| Claude Opus 5 | ~$38 (~₹3,300) | $5 / $25 |
-
-A small fast model is genuinely fine for Modules 0–9. Save the expensive one
-for Modules 10–12 where reasoning quality is the actual subject.
+Use a small, cheap model for Modules 0 to 9. Save the expensive one for
+Modules 10 to 12, where reasoning quality is the actual subject.
 
 ---
 
 ## Two modules need no model at all
 
-If you are still sorting out access, you are not blocked:
+If access is still pending, you are not blocked:
 
-- **Module 6 (Retrieval Foundations)** — embeddings run locally on CPU. No LLM,
-  no key. It is one of the biggest modules and entirely doable offline.
-- **Module 1 (Models & Messages)** — the message-structure half works against
-  any model, including a tiny local one.
+- **Module 6 (Retrieval Foundations)** runs entirely on local CPU embeddings.
+  No LLM, no key. It is one of the largest modules and works fully offline.
+- **Module 1 (Models & Messages)** works against any model, including a tiny
+  local one.
 
 ---
 
-## Capability tiers — read this before you think you broke something
+## Model capability, not vendor
 
-Several modules ask you to verify a **behaviour**, not just that code runs. Some
-of those behaviours depend on how capable your model is. If a check below fails
-on a small local model, **your code is probably fine and the model simply cannot
-do it.**
+Several modules ask you to verify a **behaviour**, not just that code runs.
+Those behaviours depend on how capable your model is, and that is about model
+size and class rather than which company made it. A large hosted model from
+any vendor behaves similarly. A 3B local model does not.
 
-| Module | Check | Small local (3B) | Mid local (8B) | Hosted |
+If a check below fails on a small model, **your code is probably fine.**
+
+| Module | Check | Small local (3B) | Mid local (8B) | Large hosted |
 |---|---|---|---|---|
 | 0 | Tool actually called | usually | yes | yes |
 | 2 | Calls **nothing** for "thanks" | often fails | usually | yes |
 | 2 | Picks the right tool of three | sometimes fails | usually | yes |
 | 3 | Terminates the loop sensibly | often fails | usually | yes |
 | 4 | Optional fields return `null`, not invented | **usually fails** | often fails | usually |
-| 7 | Declines out-of-scope questions | **usually fails** | sometimes fails | usually |
+| 7 | Declines out of scope questions | **usually fails** | sometimes fails | usually |
 | 7 | Resists prompt injection | **fails** | often fails | often resists |
 | 11 | Declines to delegate trivial questions | **usually fails** | sometimes fails | usually |
 
 **This table is a teaching tool, not an apology.** Watching a 3B model get
-compromised by every injection payload in Module 7 while a hosted model resists
-most of them is a genuinely useful thing to see. It is the clearest possible
-demonstration of the module's actual argument: *prompt-level defence is
-model-dependent, architectural defence is not.* A read-only toolset protects
-you on every model in that table.
+compromised by every injection payload in Module 7, while a large model
+resists most of them, is the clearest possible demonstration of that module's
+actual argument: prompt level defence is model dependent, architectural
+defence is not. A read only toolset protects you on every column of that
+table.
 
 So if you are on a small model, do the exercise, record what happened, and
 write down which defence still held. That is the right answer, not a failure.
+
+> **Verification status, stated plainly:** every code sample has been run
+> against the installed packages, so imports, signatures, and data structures
+> are correct. The behavioural checks have not yet been confirmed against a
+> live model on any provider. Treat the "Expected output" blocks as
+> illustrative until someone completes a cohort and corrects them.
 
 ---
 
 ## Record your choice
 
-Put this at the top of your notes, and in your project README:
+Put this at the top of your notes and in your project README:
 
 ```
-Setup:            Claude / Ollama
-Model string:     ollama:llama3.1:8b
-Machine:          16GB RAM, 8 cores, no NVIDIA GPU
-Embeddings:       sentence-transformers/all-MiniLM-L6-v2 (local)
+Provider:     openai / google_genai / anthropic / ollama / ...
+Model string: openai:gpt-5.5
+Machine:      16GB RAM, 8 cores, no NVIDIA GPU
+Embeddings:   sentence-transformers/all-MiniLM-L6-v2 (local)
 ```
 
-When you compare results with a colleague and they differ, the model is the
-first thing to check — and you will only know if you wrote it down.
+When your results differ from a colleague's, the model is the first thing to
+check, and you will only know if you wrote it down.
 
 ---
 
-*Next: [Module 0 — Setup & Mental Model](./langchain-000-setup-and-mental-model.md).*
+*Next: [Module 0: Setup & Mental Model](./langchain-000-setup-and-mental-model.md).*

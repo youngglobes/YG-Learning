@@ -1,14 +1,15 @@
-.PHONY: install install-claude install-ollama test lint run clean
+# Set PROVIDER to whichever LangChain extra matches your model.
+# Examples: openai, google-genai, anthropic, groq, mistralai, deepseek,
+#           together, fireworks, baseten, xai, perplexity, huggingface,
+#           aws, google-vertexai, ollama
+PROVIDER ?= ollama
 
-install:         ## base + dev + rag
+.PHONY: install test lint run clean
+
+install:         ## venv + dev + rag deps + your provider
 	python3 -m venv .venv
 	.venv/bin/pip install -e ".[dev,rag]"
-
-install-claude: install
-	.venv/bin/pip install -e ".[claude]"
-
-install-ollama: install
-	.venv/bin/pip install -e ".[ollama]"
+	.venv/bin/pip install "langchain[$(PROVIDER)]"
 
 test:            ## no API key needed
 	.venv/bin/pytest -q
