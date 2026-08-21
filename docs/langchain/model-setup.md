@@ -16,10 +16,14 @@ This tutorial supports **two setups**. Pick one:
 cost. If you already have a Claude key, or would rather spend a few hundred
 rupees than wait on a slow local model, use that instead. Your call.
 
-These two are what the examples are written and maintained for. Other
-providers (OpenAI, Gemini, Groq, OpenRouter) work through the same interface
-and you are welcome to use one — but nothing here has been checked against
-them, so you are on your own for differences.
+These two are what the examples are written and maintained for. LangChain
+speaks to **23 providers** through the same `provider:model` interface —
+OpenAI, Gemini, Groq, Mistral, DeepSeek, OpenRouter, Bedrock, Vertex and more
+— and you are welcome to use any of them. Nothing here has been checked
+against them, so you are on your own for differences. The full list, with the
+package and example model string for each, is in the `.env` example in
+[Module 0](./langchain-000-setup-and-mental-model.md) and in
+`templates/agent-app/.env.example`.
 
 > **Verification status, stated plainly:** every code sample has been run
 > against the installed packages, so imports, signatures, and data structures
